@@ -205,3 +205,4 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+\n# Project specific ignores\nagent.md\nGEMINI.md\nBusiness Requirement Document_Updated.docx
