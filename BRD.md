@@ -522,8 +522,8 @@ but not the deletion settings.
 
 | **User Persona** | **ID** | **User Story** | **Acceptance Criteria** | **SP** |
 |----|----|----|----|----|
-| **Arjun** (OT Specialist) | **US-1.1** | As Arjun, I want the **Asset Health Dashboard** to visualize high-frequency vibration data through an **FFT spectrum**, so that I can perform immediate **Root Cause Analysis (RCA)** between bearing wear and structural resonance. | 1. Dashboard displays FFT spectrum for Vibration. <br> 2. Latency between Edge capture and FFT display is < 2 seconds. <br> 3. Historical baselines are overlaid for comparison. | **8** |
-| **Arjun** | **US-1.2** | As Arjun, I want the **Real-time Alerting Engine** to trigger visual alerts within the **Failure Horizon**, so that I can identify assets requiring emergency intervention before functional failure. | 1. Status icons turn Red for Critical breaches. <br> 2. Alerts trigger within 2 seconds of detection. <br> 3. System supports color-coded severity levels. | **3** |
+| **Arjun** (OT Specialist) | **US-1.1** | As Arjun, I want the **Asset Health Dashboard** to visualize high-frequency vibration data through an **FFT spectrum**, so that I can perform immediate **Root Cause Analysis (RCA)** between bearing wear and structural resonance. | 1. Dashboard displays FFT spectrum for Vibration. <br> 2. Latency between Edge capture and FFT display is < 2 seconds. <br> 3. Historical baselines are overlaid for comparison. | **3** |
+| **Arjun** | **US-1.2** | As Arjun, I want the **Real-time Alerting Engine** to trigger visual alerts within the **Failure Horizon**, so that I can identify assets requiring emergency intervention before functional failure. | 1. Status icons turn Red for Critical breaches. <br> 2. Alerts trigger within 2 seconds of detection. <br> 3. System supports color-coded severity levels. | **5** |
 | **Arjun** | **US-1.3** | As Arjun, I want the **Edge Connectivity Monitor** to track the "heartbeat" of every Edge device, so that I can distinguish between a network dropout and a critical machine seizure. | 1. System displays "Sensor Not Transmitting" status. <br> 2. Edge device buffers data during outages. <br> 3. Heartbeat loss triggers a High-Priority notification. | **3** |
 
 ### **Module 2: Predictive Analytics Engine**
@@ -538,21 +538,21 @@ but not the deletion settings.
 | **User Persona** | **ID** | **User Story** | **Acceptance Criteria** | **SP** |
 |----|----|----|----|----|
 | **Vikram** (Store Manager) | **US-3.1** | As Vikram, I want the **Inventory Management Module** to trigger a **Just-in-Time Logistics** alert when an asset's RUL falls below the "Lead-Time + 10%" threshold, so that we can prioritize procurement and eliminate emergency shipping costs. | 1. System cross-references RUL with Inventory Lead-Times. <br> 2. Low-Stock Alert is triggered for critical shortages. | **5** |
-| **Vikram** | **US-3.2** | As Vikram, I want the **Inventory Management Module** to allocate spare parts to specific Work Order IDs, so that critical inventory is not consumed by lower-priority preventive tasks. | 1. Parts can be "Reserved" in the system. <br> 2. Inventory UI flags multiple tasks competing for the same part. | **3** |
+| **Vikram** | **US-3.2** | As Vikram, I want the **Inventory Management Module** to allocate spare parts to specific Work Order IDs, so that critical inventory is not consumed by lower-priority preventive tasks. | 1. Parts can be "Reserved" in the system. <br> 2. Inventory UI flags multiple tasks competing for the same part. | **13** |
 
 ### **Module 4: Work Order Management System**
 
 | **User Persona** | **ID** | **User Story** | **Acceptance Criteria** | **SP** |
 |----|----|----|----|----|
-| **Raj** (Field Technician) | **US-4.1** | As Raj, I want to access **Digital Asset Documentation** (Schematics and Manuals) and **MTTR benchmarks** via the **PWA Field Interface**, so that I can complete repairs within the predicted downtime window. | 1. PWA provides links to digital schematics. <br> 2. Estimated repair time is displayed on the PWA dashboard. | **5** |
-| **Raj** | **US-4.2** | As Raj, I want the **PWA Field Interface** to validate my physical presence via QR-scan, so that the **Compliance Audit Trail** is accurately populated for Safety/ISO standards. | 1. QR code scan required via browser-camera to "Check-In" at asset. <br> 2. Geo-timestamped log is stored in the audit trail. | **3** |
+| **Raj** (Field Technician) | **US-4.1** | As Raj, I want to access **Digital Asset Documentation** (Schematics and Manuals) and **MTTR benchmarks** via the **PWA Field Interface**, so that I can complete repairs within the predicted downtime window. | 1. PWA provides links to digital schematics. <br> 2. Estimated repair time is displayed on the PWA dashboard. | **8** |
+| **Raj** | **US-4.2** | As Raj, I want the **PWA Field Interface** to validate my physical presence via QR-scan, so that the **Compliance Audit Trail** is accurately populated for Safety/ISO standards. | 1. QR code scan required via browser-camera to "Check-In" at asset. <br> 2. Geo-timestamped log is stored in the audit trail. | **5** |
 
 ### **Module 5: Admin & Executive Reporting**
 
 | **User Persona** | **ID** | **User Story** | **Acceptance Criteria** | **SP** |
 |----|----|----|----|----|
 | **Anita** (Plant Manager) | **US-5.1** | As Anita, I want the **Executive Decision Support Dashboard** to provide a financial risk comparison between continued operation and a scheduled repair, so that I can hit my **Monthly Delivery Targets** without risking a catastrophic machine failure. | 1. Dashboard displays "Risk of Failure" in currency (e.g., $5,000/hr). <br> 2. Analytics module compares 'Emergency Repair Cost' vs 'Scheduled Maintenance Cost'. | **8** |
-| **Karthik** (IT Admin) | **US-5.2** | As Karthik, I want to enforce **TLS-Encrypted Telemetry** and Role-Based Access Control, so that the IoT data stream is protected from unauthorized modification or interception. | 1. Only TLS-encrypted traffic is accepted by the broker. <br> 2. RBAC prevents unauthorized calibration changes. | **5** |
+| **Karthik** (IT Admin) | **US-5.2** | As Karthik, I want to enforce **TLS-Encrypted Telemetry** and Role-Based Access Control, so that the IoT data stream is protected from unauthorized modification or interception. | 1. Only TLS-encrypted traffic is accepted by the broker. <br> 2. RBAC prevents unauthorized calibration changes. | **8** |
 
 ### **Module 6: EHS, Security & Project Oversight**
 
