@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   AreaChart,
   Area,
@@ -17,12 +18,22 @@ interface RULTrendChartProps {
 }
 
 export function RULTrendChart({ data }: RULTrendChartProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const chartData = data.map((point) => ({
     date: point.date,
     rul: point.rul,
     confidenceHigh: point.rul + (100 - point.confidence) * 2,
     confidenceLow: point.rul - (100 - point.confidence) * 2,
   }));
+
+  if (!mounted) {
+    return <div className="h-64 bg-[#0f172a] rounded" />;
+  }
 
   return (
     <div className="h-64">

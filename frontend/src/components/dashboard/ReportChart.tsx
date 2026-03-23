@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -17,6 +18,16 @@ interface ReportChartProps {
 }
 
 export function ReportChart({ data }: ReportChartProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="h-64 bg-[#0f172a] rounded" />;
+  }
+
   return (
     <div className="h-64">
       <ResponsiveContainer width="100%" height="100%">

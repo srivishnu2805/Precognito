@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -17,11 +18,21 @@ interface FFTChartProps {
 }
 
 export function FFTChart({ data }: FFTChartProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const chartData = data.map((bin) => ({
     frequency: bin.frequency,
     amplitude: bin.amplitude,
     baseline: bin.baselineAmplitude,
   }));
+
+  if (!mounted) {
+    return <div className="h-64 bg-[#0f172a] rounded" />;
+  }
 
   return (
     <div className="h-64">
