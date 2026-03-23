@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth, rolePermissions } from "@/lib/authContext";
 
-const navItems = [
+const allNavItems = [
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/assets", label: "Assets" },
   { href: "/alerts", label: "Alerts" },
   { href: "/edge", label: "Edge" },
@@ -18,6 +20,16 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user, isLoggedIn } = useAuth();
+
+  const allowedPages = user ? rolePermissions[user.role] : [];
+  const navItems = allNavItems.filter(
+    (item) => item.href === "/dashboard" || allowedPages.includes(item.href.slice(1))
+  );
+
+  if (!isLoggedIn) {
+    return null;
+  }
 
   return (
     <aside
@@ -25,7 +37,9 @@ export function Sidebar() {
       style={{ backgroundColor: "#0f172a" }}
     >
       <div className="h-14 px-4 flex items-center border-b border-[#334155]">
-        <span className="font-semibold text-[#f1f5f9]">Precognito</span>
+        <Link href="/dashboard" className="font-semibold text-[#f1f5f9]">
+          Precognito
+        </Link>
       </div>
 
       <nav className="flex-1 py-4">
