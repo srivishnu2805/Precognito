@@ -25,42 +25,38 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class PatternDetector:
-    """Simplified pattern-based anomaly detection"""
-    
-    def __init__(self, window_size: int = 10, spike_threshold: float = 2.5):
+    def __init__(self, window_size: int = 10, spike_threshold: float = 1.5):
         self.window_size = window_size
         self.spike_threshold = spike_threshold
         self.history = defaultdict(lambda: defaultdict(lambda: deque(maxlen=window_size)))
-        self.timestamps = defaultdict(lambda: deque(maxlen=window_size))
-    
-    def add_record(self, machine_id: str, data: Dict, timestamp: str = None):
-        if timestamp is None:
-            timestamp = datetime.now().isoformat()
-        
-        self.timestamps[machine_id].append(timestamp)
+
+    def add_record(self, machine_id: str, data: Dict):
         for sensor, value in data.items():
             if sensor in SENSOR_CONFIG and value is not None:
                 self.history[machine_id][sensor].append(float(value))
-    
-    def detect_spike(self, machine_id: str, sensor: str, current_value: float) -> Tuple[bool, float, str]:
+
+    def detect_spike(self, machine_id: str, sensor: str, current_value: float):
         if sensor not in self.history[machine_id] or len(self.history[machine_id][sensor]) < 3:
             return False, 0.0, "Insufficient data"
-        
-        recent_values = list(self.history[machine_id][sensor])[:-1]
-        mean_val, std_val = np.mean(recent_values), np.std(recent_values)
-        
+
+        values = list(self.history[machine_id][sensor])
+        mean_val = np.mean(values)
+        std_val = np.std(values)
+
         if std_val == 0:
             return False, 0.0, "No variance"
-        
+
         z_score = abs((current_value - mean_val) / std_val)
-        is_spike = z_score > self.spike_threshold
-        
-        reason = f"Spike: {sensor}={current_value:.2f} deviates {z_score:.2f}σ from mean {mean_val:.2f}"
+
+        # 🔥 FIX: add threshold fallback
+        threshold_exceeded = current_value > SENSOR_CONFIG[sensor]["max"]
+
+        is_spike = z_score > self.spike_threshold or threshold_exceeded
+
+        reason = f"{sensor} spike: value={current_value}, mean={mean_val:.2f}, z={z_score:.2f}"
         return is_spike, z_score, reason
-    
-    def detect_pattern_anomaly(self, machine_id: str, data: Dict) -> Dict:
-        self.add_record(machine_id, data)
-        
+
+    def detect_pattern_anomaly(self, machine_id: str, data: Dict):
         result = {
             "anomaly_detected": False,
             "anomaly_types": [],
@@ -69,20 +65,28 @@ class PatternDetector:
             "reason": "No pattern anomalies detected",
             "spike_anomalies": {}
         }
-        
+
+        # 🔥 FIX: detect BEFORE adding to history
         for sensor, value in data.items():
             if sensor in SENSOR_CONFIG and value is not None:
                 is_spike, score, reason = self.detect_spike(machine_id, sensor, float(value))
+
                 if is_spike:
-                    result["spike_anomalies"][sensor] = {"detected": True, "score": score, "reason": reason}
                     result["anomaly_detected"] = True
                     result["anomaly_types"].append(sensor)
-                    result["reason"] = reason
+                    result["spike_anomalies"][sensor] = {
+                        "score": score,
+                        "reason": reason
+                    }
                     result["confidence"] = max(result["confidence"], min(score / 5, 1.0))
-        
+                    result["reason"] = reason
+
+        # 🔥 NOW add to history AFTER detection
+        self.add_record(machine_id, data)
+
         if result["anomaly_detected"]:
             result["severity"] = "HIGH" if result["confidence"] > 0.7 else "MODERATE"
-        
+
         return result
 
 class AnomalyDetector:
@@ -230,8 +234,11 @@ class AnomalyDetector:
         }
     
     def detect_batch(self, data_list: List[Dict]) -> List[Dict]:
-        """Batch detection"""
-        return [self.detect_anomaly(data) for data in data_list]
+        results = []
+        for data in data_list:
+            result = self.detect_anomaly(data)  # sequential pattern learning
+            results.append(result)
+        return results      
     
     def get_history(self, machine_id: str) -> Dict:
         """Get machine history"""
