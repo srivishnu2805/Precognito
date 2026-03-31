@@ -31,11 +31,17 @@ This module implements the core data ingestion pipeline for the Precognito syste
 
 ##  File Structure
 ingestion/
+
 │── alerts.py
+
 │── heartbeat.py
+
 │── preprocess.py
+
 │── simulator.py
+
 │── init.py
+
 │── README.md
 
 
