@@ -1,0 +1,363 @@
+{
+  "batch_summary": {
+    "total_records": 10,
+    "anomalies_detected": 10,
+    "normal_records": 0,
+    "anomaly_rate": 100.0,
+    "processing_time": "2026-03-27T22:34:53.170683"
+  },
+  "severity_breakdown": {
+    "MODERATE": 9,
+    "HIGH": 1
+  },
+  "machine_statistics": {
+    "M1": {
+      "total": 4,
+      "anomalies": 4
+    },
+    "M2": {
+      "total": 3,
+      "anomalies": 3
+    },
+    "M3": {
+      "total": 1,
+      "anomalies": 1
+    },
+    "M4": {
+      "total": 1,
+      "anomalies": 1
+    },
+    "M5": {
+      "total": 1,
+      "anomalies": 1
+    }
+  },
+  "detailed_results": [
+    {
+      "machine_id": "M1",
+      "timestamp": "2026-03-27T10:00:00",
+      "anomaly_detected": true,
+      "anomaly_types": [
+        "vibration",
+        "temperature",
+        "torque"
+      ],
+      "severity": "MODERATE",
+      "confidence": 0.72,
+      "metrics": {
+        "temperature": 305.0,
+        "vibration": 1500.0,
+        "torque": 45.0
+      },
+      "reason": "ML model detected anomaly (score: 0.534)",
+      "pattern_analysis": {
+        "anomaly_detected": false,
+        "confidence": 0.0,
+        "spike_anomalies": {},
+        "trend_anomalies": {},
+        "threshold_anomalies": {}
+      },
+      "ml_analysis": {
+        "anomaly_detected": true,
+        "confidence": 0.72,
+        "score": 0.534
+      },
+      "input_timestamp": "2026-03-27T10:00:00",
+      "record_number": 1
+    },
+    {
+      "machine_id": "M1",
+      "timestamp": "2026-03-27T10:01:00",
+      "anomaly_detected": true,
+      "anomaly_types": [
+        "vibration",
+        "temperature",
+        "torque"
+      ],
+      "severity": "MODERATE",
+      "confidence": 0.711,
+      "metrics": {
+        "temperature": 307.0,
+        "vibration": 1520.0,
+        "torque": 44.0
+      },
+      "reason": "ML model detected anomaly (score: 0.518)",
+      "pattern_analysis": {
+        "anomaly_detected": false,
+        "confidence": 0.0,
+        "spike_anomalies": {},
+        "trend_anomalies": {},
+        "threshold_anomalies": {}
+      },
+      "ml_analysis": {
+        "anomaly_detected": true,
+        "confidence": 0.711,
+        "score": 0.518
+      },
+      "input_timestamp": "2026-03-27T10:01:00",
+      "record_number": 2
+    },
+    {
+      "machine_id": "M1",
+      "timestamp": "2026-03-27T10:02:00",
+      "anomaly_detected": true,
+      "anomaly_types": [
+        "vibration",
+        "temperature",
+        "torque"
+      ],
+      "severity": "MODERATE",
+      "confidence": 0.718,
+      "metrics": {
+        "temperature": 306.5,
+        "vibration": 1510.0,
+        "torque": 45.5
+      },
+      "reason": "ML model detected anomaly (score: 0.530)",
+      "pattern_analysis": {
+        "anomaly_detected": false,
+        "confidence": 0.0,
+        "spike_anomalies": {},
+        "trend_anomalies": {},
+        "threshold_anomalies": {}
+      },
+      "ml_analysis": {
+        "anomaly_detected": true,
+        "confidence": 0.718,
+        "score": 0.53
+      },
+      "input_timestamp": "2026-03-27T10:02:00",
+      "record_number": 3
+    },
+    {
+      "machine_id": "M1",
+      "timestamp": "2026-03-27T10:03:00",
+      "anomaly_detected": true,
+      "anomaly_types": [
+        "vibration",
+        "temperature",
+        "torque"
+      ],
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "metrics": {
+        "temperature": 450.0,
+        "vibration": 1500.0,
+        "torque": 45.0
+      },
+      "reason": "Spike detected: temperature=450.00 deviates 169.25\u03c3 from mean 306.17; ML model detected anomaly (score: 0.520)",
+      "pattern_analysis": {
+        "anomaly_detected": true,
+        "confidence": 0.4,
+        "spike_anomalies": {
+          "temperature": {
+            "detected": true,
+            "score": 169.2482246242528,
+            "reason": "Spike detected: temperature=450.00 deviates 169.25\u03c3 from mean 306.17"
+          }
+        },
+        "trend_anomalies": {},
+        "threshold_anomalies": {}
+      },
+      "ml_analysis": {
+        "anomaly_detected": true,
+        "confidence": 0.712,
+        "score": 0.52
+      },
+      "input_timestamp": "2026-03-27T10:03:00",
+      "record_number": 4
+    },
+    {
+      "machine_id": "M2",
+      "timestamp": "2026-03-27T10:00:00",
+      "anomaly_detected": true,
+      "anomaly_types": [
+        "vibration",
+        "temperature",
+        "torque"
+      ],
+      "severity": "MODERATE",
+      "confidence": 0.704,
+      "metrics": {
+        "temperature": 308.0,
+        "vibration": 1490.0,
+        "torque": 46.0
+      },
+      "reason": "ML model detected anomaly (score: 0.507)",
+      "pattern_analysis": {
+        "anomaly_detected": false,
+        "confidence": 0.0,
+        "spike_anomalies": {},
+        "trend_anomalies": {},
+        "threshold_anomalies": {}
+      },
+      "ml_analysis": {
+        "anomaly_detected": true,
+        "confidence": 0.704,
+        "score": 0.507
+      },
+      "input_timestamp": "2026-03-27T10:00:00",
+      "record_number": 5
+    },
+    {
+      "machine_id": "M2",
+      "timestamp": "2026-03-27T10:01:00",
+      "anomaly_detected": true,
+      "anomaly_types": [
+        "vibration",
+        "temperature",
+        "torque"
+      ],
+      "severity": "MODERATE",
+      "confidence": 0.706,
+      "metrics": {
+        "temperature": 310.0,
+        "vibration": 1510.0,
+        "torque": 47.0
+      },
+      "reason": "ML model detected anomaly (score: 0.510)",
+      "pattern_analysis": {
+        "anomaly_detected": false,
+        "confidence": 0.0,
+        "spike_anomalies": {},
+        "trend_anomalies": {},
+        "threshold_anomalies": {}
+      },
+      "ml_analysis": {
+        "anomaly_detected": true,
+        "confidence": 0.706,
+        "score": 0.51
+      },
+      "input_timestamp": "2026-03-27T10:01:00",
+      "record_number": 6
+    },
+    {
+      "machine_id": "M2",
+      "timestamp": "2026-03-27T10:02:00",
+      "anomaly_detected": true,
+      "anomaly_types": [
+        "vibration",
+        "temperature",
+        "torque"
+      ],
+      "severity": "MODERATE",
+      "confidence": 0.72,
+      "metrics": {
+        "temperature": 250.0,
+        "vibration": 1500.0,
+        "torque": 45.0
+      },
+      "reason": "ML model detected anomaly (score: 0.534)",
+      "pattern_analysis": {
+        "anomaly_detected": false,
+        "confidence": 0.0,
+        "spike_anomalies": {},
+        "trend_anomalies": {},
+        "threshold_anomalies": {}
+      },
+      "ml_analysis": {
+        "anomaly_detected": true,
+        "confidence": 0.72,
+        "score": 0.534
+      },
+      "input_timestamp": "2026-03-27T10:02:00",
+      "record_number": 7
+    },
+    {
+      "machine_id": "M3",
+      "timestamp": "2026-03-27T10:00:00",
+      "anomaly_detected": true,
+      "anomaly_types": [
+        "vibration",
+        "temperature",
+        "torque"
+      ],
+      "severity": "MODERATE",
+      "confidence": 0.738,
+      "metrics": {
+        "temperature": 305.0,
+        "vibration": 3000.0,
+        "torque": 45.0
+      },
+      "reason": "ML model detected anomaly (score: 0.563)",
+      "pattern_analysis": {
+        "anomaly_detected": false,
+        "confidence": 0.0,
+        "spike_anomalies": {},
+        "trend_anomalies": {},
+        "threshold_anomalies": {}
+      },
+      "ml_analysis": {
+        "anomaly_detected": true,
+        "confidence": 0.738,
+        "score": 0.563
+      },
+      "input_timestamp": "2026-03-27T10:00:00",
+      "record_number": 8
+    },
+    {
+      "machine_id": "M4",
+      "timestamp": "2026-03-27T10:00:00",
+      "anomaly_detected": true,
+      "anomaly_types": [
+        "vibration",
+        "temperature",
+        "torque"
+      ],
+      "severity": "MODERATE",
+      "confidence": 0.746,
+      "metrics": {
+        "temperature": 400.0,
+        "vibration": 2500.0,
+        "torque": 80.0
+      },
+      "reason": "ML model detected anomaly (score: 0.577)",
+      "pattern_analysis": {
+        "anomaly_detected": false,
+        "confidence": 0.0,
+        "spike_anomalies": {},
+        "trend_anomalies": {},
+        "threshold_anomalies": {}
+      },
+      "ml_analysis": {
+        "anomaly_detected": true,
+        "confidence": 0.746,
+        "score": 0.577
+      },
+      "input_timestamp": "2026-03-27T10:00:00",
+      "record_number": 9
+    },
+    {
+      "machine_id": "M5",
+      "timestamp": "2026-03-27T10:00:00",
+      "anomaly_detected": true,
+      "anomaly_types": [
+        "vibration",
+        "temperature",
+        "torque"
+      ],
+      "severity": "MODERATE",
+      "confidence": 0.746,
+      "metrics": {
+        "temperature": 500.0,
+        "vibration": 3500.0,
+        "torque": 100.0
+      },
+      "reason": "ML model detected anomaly (score: 0.577)",
+      "pattern_analysis": {
+        "anomaly_detected": false,
+        "confidence": 0.0,
+        "spike_anomalies": {},
+        "trend_anomalies": {},
+        "threshold_anomalies": {}
+      },
+      "ml_analysis": {
+        "anomaly_detected": true,
+        "confidence": 0.746,
+        "score": 0.577
+      },
+      "input_timestamp": "2026-03-27T10:00:00",
+      "record_number": 10
+    }
+  ]
+}

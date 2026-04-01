@@ -1,0 +1,168 @@
+{
+  "description": "Batch processing test cases - mixed normal and anomaly data",
+  "test_cases": [
+    {
+      "name": "Mixed Normal and Anomaly",
+      "input": {
+        "data": [
+          {
+            "machine_id": "BATCH-001",
+            "temperature": 300.0,
+            "vibration": 1500.0,
+            "torque": 40.0,
+            "type": "M"
+          },
+          {
+            "machine_id": "BATCH-002",
+            "temperature": 325.0,
+            "vibration": 1500.0,
+            "torque": 40.0,
+            "type": "M"
+          },
+          {
+            "machine_id": "BATCH-003",
+            "temperature": 300.0,
+            "vibration": 3000.0,
+            "torque": 10.0,
+            "type": "L"
+          }
+        ]
+      },
+      "expected": {
+        "total_items": 3,
+        "anomalies_detected": 2,
+        "normal_detected": 1,
+        "pattern_detection": true,
+        "ml_detection": true
+      }
+    },
+    {
+      "name": "All Normal Batch",
+      "input": {
+        "data": [
+          {
+            "machine_id": "BATCH-NORM-001",
+            "temperature": 298.0,
+            "vibration": 1400.0,
+            "torque": 38.0,
+            "type": "L"
+          },
+          {
+            "machine_id": "BATCH-NORM-002",
+            "temperature": 301.0,
+            "vibration": 1600.0,
+            "torque": 42.0,
+            "type": "M"
+          },
+          {
+            "machine_id": "BATCH-NORM-003",
+            "temperature": 299.0,
+            "vibration": 1450.0,
+            "torque": 39.0,
+            "type": "H"
+          }
+        ]
+      },
+      "expected": {
+        "total_items": 3,
+        "anomalies_detected": 0,
+        "normal_detected": 3,
+        "pattern_detection": false,
+        "ml_detection": false
+      }
+    },
+    {
+      "name": "Same Machine Pattern",
+      "input": {
+        "data": [
+          {
+            "machine_id": "PATTERN-001",
+            "temperature": 300.0,
+            "vibration": 1500.0,
+            "torque": 40.0,
+            "type": "M"
+          },
+          {
+            "machine_id": "PATTERN-001",
+            "temperature": 301.0,
+            "vibration": 1520.0,
+            "torque": 41.0,
+            "type": "M"
+          },
+          {
+            "machine_id": "PATTERN-001",
+            "temperature": 299.0,
+            "vibration": 1480.0,
+            "torque": 39.0,
+            "type": "M"
+          },
+          {
+            "machine_id": "PATTERN-001",
+            "temperature": 335.0,
+            "vibration": 1500.0,
+            "torque": 40.0,
+            "type": "M"
+          }
+        ]
+      },
+      "expected": {
+        "total_items": 4,
+        "anomalies_detected": 1,
+        "normal_detected": 3,
+        "pattern_detection": true,
+        "ml_detection": true,
+        "last_item_anomaly": true
+      }
+    },
+    {
+      "name": "Large Batch Performance",
+      "input": {
+        "data": [
+          {
+            "machine_id": "PERF-001",
+            "temperature": 300.0,
+            "vibration": 1500.0,
+            "torque": 40.0,
+            "type": "M"
+          },
+          {
+            "machine_id": "PERF-002",
+            "temperature": 310.0,
+            "vibration": 2000.0,
+            "torque": 60.0,
+            "type": "L"
+          },
+          {
+            "machine_id": "PERF-003",
+            "temperature": 295.0,
+            "vibration": 1000.0,
+            "torque": 20.0,
+            "type": "H"
+          },
+          {
+            "machine_id": "PERF-004",
+            "temperature": 330.0,
+            "vibration": 2800.0,
+            "torque": 8.0,
+            "type": "M"
+          },
+          {
+            "machine_id": "PERF-005",
+            "temperature": 335.0,
+            "vibration": 3500.0,
+            "torque": 5.0,
+            "type": "L"
+          }
+        ]
+      },
+      "expected": {
+        "total_items": 5,
+        "anomalies_detected": 3,
+        "normal_detected": 2,
+        "pattern_detection": true,
+        "ml_detection": true,
+        "max_response_time_ms": 500
+      }
+    }
+  ]
+}
