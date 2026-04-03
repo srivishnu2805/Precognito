@@ -1,10 +1,12 @@
 from fastapi import FastAPI
+from precognito.work_orders.api import router as workorder_router
 from precognito.ingestion.preprocess import preprocess
 from precognito.ingestion.heartbeat import update_heartbeat, check_device_status
 from precognito.ingestion.alerts import check_alerts
 
 app = FastAPI()
 
+app.include_router(workorder_router)
 
 @app.get("/")
 def home():

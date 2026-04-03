@@ -1,18 +1,18 @@
 from fastapi import APIRouter
+from precognito.work_orders.assets import router as assets_router
+from precognito.work_orders.audit import router as audit_router
 
-router=APIRouter()
+router = APIRouter(prefix="/work-orders", tags=["Work Orders"])
 
-workorders = [
-    {
-        "id": 1,
-        "machine_id": "M101",
-        "issue": "High vibration",
-        "priority": "HIGH",
-        "status": "PENDING",
-        "assigned_to": None
-    }
+# Include assets routes
+router.include_router(assets_router)
+router.include_router(audit_router)
+
+work_orders = [
+    {"id": 1, "assetId": "ASSET-1", "status": "IN_PROGRESS"},
+    {"id": 2, "assetId": "ASSET-2", "status": "COMPLETED"},
 ]
 
-@router.get("/workorders")
-def get_workorders():
-    return workorders
+@router.get("/")
+def get_work_orders():
+    return work_orders
