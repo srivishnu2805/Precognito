@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 # Import routers from other modules
 from precognito.work_orders.api import router as workorder_router
+from precognito.inventory.api import router as inventory_router
 
 load_dotenv()
 
@@ -16,6 +17,8 @@ app = FastAPI()
 # Include Routers
 # Module 4: Work Orders (Protected by session)
 app.include_router(workorder_router)
+# Module 3: Inventory & Supply Chain
+app.include_router(inventory_router)
 
 async def get_db_pool():
     if not hasattr(app, "db_pool"):

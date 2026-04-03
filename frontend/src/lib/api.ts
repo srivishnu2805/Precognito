@@ -49,4 +49,8 @@ export const api = {
     fetchWithAuth(`/analytics/oee${deviceId ? `?device_id=${deviceId}` : ""}`),
   getSafetyAlerts: (range?: string) => 
     fetchWithAuth(`/safety-alerts${range ? `?range=${range}` : ""}`),
+  getInventory: () => fetchWithAuth("/inventory"),
+  getJITAlerts: () => fetchWithAuth("/inventory/jit-alerts"),
+  reservePart: (data: { partId: number, workOrderId?: number, quantity: number }) => 
+    fetchWithAuth("/inventory/reserve", { method: "POST", body: JSON.stringify(data) }),
 };
