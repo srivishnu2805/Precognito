@@ -2,7 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth, rolePermissions } from "@/lib/authContext";
+import { useSession } from "@/lib/auth-client";
+
+// Define roles and permissions here or import from a shared config
+export type UserRole = "ADMIN" | "MANAGER" | "OT_SPECIALIST" | "TECHNICIAN" | "STORE_MANAGER";
+
+export const rolePermissions: Record<string, string[]> = {
+  ADMIN: ["assets", "alerts", "edge", "reports", "inventory", "work-orders", "executive", "analytics", "ehs", "admin"],
+  MANAGER: ["assets", "reports", "executive", "analytics"],
+  OT_SPECIALIST: ["assets", "alerts", "edge", "ehs"],
+  TECHNICIAN: ["assets", "alerts", "work-orders"],
+  STORE_MANAGER: ["inventory"],
+};
 
 const allNavItems = [
   { href: "/dashboard", label: "Dashboard" },
@@ -20,16 +31,16 @@ const allNavItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user, isLoggedIn } = useAuth();
+  const { data: session } = useSession();
+  const user = session?.user;
 
-  const allowedPages = user ? rolePermissions[user.role] : [];
+  // @ts-ignore - custom role field
+  const role = user?.role || "TECHNICIAN";
+  const allowedPages = rolePermissions[role] || [];
+  
   const navItems = allNavItems.filter(
     (item) => item.href === "/dashboard" || allowedPages.includes(item.href.slice(1))
   );
-
-  if (!isLoggedIn) {
-    return null;
-  }
 
   return (
     <aside

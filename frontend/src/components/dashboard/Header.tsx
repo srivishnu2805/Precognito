@@ -3,22 +3,34 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth, roleColors } from "@/lib/authContext";
+import { useSession, signOut } from "@/lib/auth-client";
 import { mockThermalAlerts } from "@/lib/mockData";
 
+export const roleColors: Record<string, string> = {
+  ADMIN: "#ef4444",
+  MANAGER: "#8b5cf6",
+  OT_SPECIALIST: "#3b82f6",
+  TECHNICIAN: "#22c55e",
+  STORE_MANAGER: "#eab308",
+};
+
 export function Header() {
-  const { user, logout } = useAuth();
+  const { data: session } = useSession();
+  const user = session?.user;
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
 
   const unacknowledgedAlerts = mockThermalAlerts.filter((a) => !a.acknowledged).length;
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
     router.push("/login");
   };
 
   if (!user) return null;
+
+  // @ts-ignore
+  const role = user.role || "TECHNICIAN";
 
   return (
     <header
@@ -56,12 +68,12 @@ export function Header() {
             onClick={() => setShowDropdown(!showDropdown)}
             className="flex items-center gap-2 p-2 rounded-lg hover:bg-[#1e293b] transition-colors"
           >
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium" style={{ backgroundColor: roleColors[user.role] }}>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium" style={{ backgroundColor: roleColors[role] || "#3b82f6" }}>
               {user.name.charAt(0).toUpperCase()}
             </div>
             <div className="text-left hidden sm:block">
               <p className="text-sm text-[#f1f5f9]">{user.name}</p>
-              <p className="text-xs text-[#94a3b8]">{user.role.replace(/_/g, " ")}</p>
+              <p className="text-xs text-[#94a3b8]">{role.replace(/_/g, " ")}</p>
             </div>
             <svg className="w-4 h-4 text-[#94a3b8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

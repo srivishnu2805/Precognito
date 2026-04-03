@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAuth, UserRole } from "@/lib/authContext";
+import { signIn, authClient } from "@/lib/auth-client";
 
-const roles: { value: UserRole; label: string }[] = [
+const roles = [
   { value: "ADMIN", label: "Administrator" },
   { value: "MANAGER", label: "Plant Manager" },
   { value: "OT_SPECIALIST", label: "OT Specialist" },
@@ -15,29 +15,53 @@ const roles: { value: UserRole; label: string }[] = [
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [selectedRole, setSelectedRole] = useState<UserRole>("ADMIN");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("ADMIN");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!username || !password) {
-      setError("Please enter username and password");
+    if (!email || !password) {
+      setError("Please enter email and password");
       return;
     }
 
-    if (password.length < 3) {
-      setError("Password must be at least 3 characters");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
       return;
     }
 
+    setLoading(true);
     setError("");
-    login(username, selectedRole);
-    router.push("/dashboard");
+
+    // Try to login first
+    const { data, error: signInError } = await signIn.email({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      // If login fails (user doesn't exist), try signing up (since this is a demo)
+      const { data: signUpData, error: signUpError } = await authClient.signUp.email({
+        email,
+        password,
+        name: email.split("@")[0],
+        // @ts-ignore - custom field
+        role: selectedRole,
+      });
+
+      if (signUpError) {
+        setError(signUpError.message || "Authentication failed");
+        setLoading(false);
+      } else {
+        router.push("/dashboard");
+      }
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   return (
@@ -47,7 +71,7 @@ export default function LoginPage() {
           <Link href="/" className="inline-block">
             <h1 className="text-2xl font-bold text-[#f1f5f9]">Precognito</h1>
           </Link>
-          <p className="text-[#94a3b8] mt-2">Sign in to your account</p>
+          <p className="text-[#94a3b8] mt-2">Sign in or create account</p>
         </div>
 
         <div className="border border-[#334155] rounded-lg p-6" style={{ backgroundColor: "#1e293b" }}>
@@ -59,15 +83,15 @@ export default function LoginPage() {
             )}
 
             <div>
-              <label htmlFor="username" className="block text-sm text-[#94a3b8] mb-1">
-                Username
+              <label htmlFor="email" className="block text-sm text-[#94a3b8] mb-1">
+                Email
               </label>
               <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
                 className="w-full px-3 py-2 rounded-lg border border-[#334155] text-[#f1f5f9] placeholder-[#64748b] focus:outline-none focus:border-[#3b82f6]"
                 style={{ backgroundColor: "#0f172a" }}
               />
@@ -82,7 +106,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder="Enter your password (min 8 chars)"
                 className="w-full px-3 py-2 rounded-lg border border-[#334155] text-[#f1f5f9] placeholder-[#64748b] focus:outline-none focus:border-[#3b82f6]"
                 style={{ backgroundColor: "#0f172a" }}
               />
@@ -90,12 +114,12 @@ export default function LoginPage() {
 
             <div>
               <label htmlFor="role" className="block text-sm text-[#94a3b8] mb-1">
-                Select Role (Demo)
+                Select Role (for auto-registration)
               </label>
               <select
                 id="role"
                 value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value as UserRole)}
+                onChange={(e) => setSelectedRole(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-[#334155] text-[#f1f5f9] focus:outline-none focus:border-[#3b82f6]"
                 style={{ backgroundColor: "#0f172a" }}
               >
@@ -105,29 +129,14 @@ export default function LoginPage() {
                   </option>
                 ))}
               </select>
-              <p className="text-xs text-[#64748b] mt-1">
-                This is a demo. Any credentials will work.
-              </p>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                id="remember"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded border-[#334155] text-[#3b82f6] focus:ring-[#3b82f6]"
-              />
-              <label htmlFor="remember" className="ml-2 text-sm text-[#94a3b8]">
-                Remember me
-              </label>
             </div>
 
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-[#3b82f6] text-white rounded-lg hover:bg-[#2563eb] transition-colors font-medium"
+              disabled={loading}
+              className="w-full py-2 px-4 bg-[#3b82f6] text-white rounded-lg hover:bg-[#2563eb] transition-colors font-medium disabled:opacity-50"
             >
-              Sign In
+              {loading ? "Authenticating..." : "Sign In / Register"}
             </button>
           </form>
         </div>
