@@ -11,12 +11,14 @@ def test_process_ingestion_success(mocker):
     mock_update_heartbeat = mocker.patch("precognito.ingestion.core.update_heartbeat")
     mock_check_status = mocker.patch("precognito.ingestion.core.check_device_status")
     mock_check_alerts = mocker.patch("precognito.ingestion.core.check_alerts")
+    mock_check_thermal = mocker.patch("precognito.ingestion.core.check_sustained_thermal")
 
     # Set mock return values
     mock_detect_anomaly.return_value = {"anomaly_detected": False, "severity": "LOW", "reason": "None"}
     mock_predict_rul.return_value = {"predicted_rul_hours": 100.0, "risk_level": "Normal"}
     mock_check_status.return_value = "Active"
     mock_check_alerts.return_value = "NORMAL"
+    mock_check_thermal.return_value = False
 
     raw_data = {
         "temperature": 300.0,
