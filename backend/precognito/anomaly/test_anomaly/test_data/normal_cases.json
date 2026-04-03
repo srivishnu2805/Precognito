@@ -1,0 +1,86 @@
+{
+  "description": "Normal operation test cases - should NOT detect anomalies",
+  "test_cases": [
+    {
+      "name": "Perfect Normal",
+      "input": {
+        "machine_id": "NORM-001",
+        "temperature": 300.0,
+        "vibration": 1500.0,
+        "torque": 40.0,
+        "type": "M"
+      },
+      "expected": {
+        "anomaly_detected": false,
+        "severity": "LOW",
+        "confidence_max": 0.2,
+        "anomaly_types": []
+      }
+    },
+    {
+      "name": "Slightly High Normal",
+      "input": {
+        "machine_id": "NORM-002",
+        "temperature": 302.0,
+        "vibration": 1600.0,
+        "torque": 42.0,
+        "type": "L"
+      },
+      "expected": {
+        "anomaly_detected": false,
+        "severity": "LOW",
+        "confidence_max": 0.2,
+        "anomaly_types": []
+      }
+    },
+    {
+      "name": "Slightly Low Normal",
+      "input": {
+        "machine_id": "NORM-003",
+        "temperature": 298.0,
+        "vibration": 1400.0,
+        "torque": 38.0,
+        "type": "H"
+      },
+      "expected": {
+        "anomaly_detected": false,
+        "severity": "LOW",
+        "confidence_max": 0.2,
+        "anomaly_types": []
+      }
+    },
+    {
+      "name": "Different Machine Types",
+      "input": {
+        "machine_id": "NORM-004",
+        "temperature": 301.0,
+        "vibration": 1550.0,
+        "torque": 41.0,
+        "type": "M"
+      },
+      "expected": {
+        "anomaly_detected": false,
+        "severity": "LOW",
+        "confidence_max": 0.2,
+        "anomaly_types": []
+      }
+    },
+    {
+      "name": "With Tool Wear",
+      "input": {
+        "machine_id": "NORM-005",
+        "temperature": 299.0,
+        "vibration": 1450.0,
+        "torque": 39.0,
+        "tool_wear": 75.0,
+        "type": "L"
+      },
+      "expected": {
+        "anomaly_detected": false,
+        "severity": "LOW",
+        "confidence_max": 0.2,
+        "anomaly_types": []
+      }
+    }
+  ]
+}

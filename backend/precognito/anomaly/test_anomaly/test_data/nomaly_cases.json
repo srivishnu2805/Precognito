@@ -1,0 +1,86 @@
+{
+  "description": "Clear anomaly test cases - SHOULD detect anomalies",
+  "test_cases": [
+    {
+      "name": "Extreme Temperature",
+      "input": {
+        "machine_id": "ANOM-001",
+        "temperature": 325.0,
+        "vibration": 1500.0,
+        "torque": 40.0,
+        "type": "M"
+      },
+      "expected": {
+        "anomaly_detected": true,
+        "severity": "HIGH",
+        "confidence_min": 0.5,
+        "anomaly_types": ["ML_Detected"]
+      }
+    },
+    {
+      "name": "Extreme Vibration",
+      "input": {
+        "machine_id": "ANOM-002",
+        "temperature": 300.0,
+        "vibration": 3000.0,
+        "torque": 40.0,
+        "type": "L"
+      },
+      "expected": {
+        "anomaly_detected": true,
+        "severity": "HIGH",
+        "confidence_min": 0.5,
+        "anomaly_types": ["ML_Detected"]
+      }
+    },
+    {
+      "name": "Low Torque",
+      "input": {
+        "machine_id": "ANOM-003",
+        "temperature": 300.0,
+        "vibration": 1500.0,
+        "torque": 8.0,
+        "type": "H"
+      },
+      "expected": {
+        "anomaly_detected": true,
+        "severity": "HIGH",
+        "confidence_min": 0.5,
+        "anomaly_types": ["ML_Detected"]
+      }
+    },
+    {
+      "name": "Multiple Anomalies",
+      "input": {
+        "machine_id": "ANOM-004",
+        "temperature": 330.0,
+        "vibration": 2800.0,
+        "torque": 10.0,
+        "tool_wear": 200.0,
+        "type": "M"
+      },
+      "expected": {
+        "anomaly_detected": true,
+        "severity": "HIGH",
+        "confidence_min": 0.7,
+        "anomaly_types": ["ML_Detected"]
+      }
+    },
+    {
+      "name": "Critical Values",
+      "input": {
+        "machine_id": "ANOM-005",
+        "temperature": 335.0,
+        "vibration": 3500.0,
+        "torque": 5.0,
+        "type": "L"
+      },
+      "expected": {
+        "anomaly_detected": true,
+        "severity": "HIGH",
+        "confidence_min": 0.7,
+        "anomaly_types": ["ML_Detected"]
+      }
+    }
+  ]
+}

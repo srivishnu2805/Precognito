@@ -1,0 +1,150 @@
+{
+  "description": "Edge cases and error scenarios - test robustness",
+  "test_cases": [
+    {
+      "name": "Empty Batch",
+      "input": {
+        "data": []
+      },
+      "expected": {
+        "status_code": 200,
+        "response_length": 0,
+        "no_errors": true
+      }
+    },
+    {
+      "name": "Missing Machine ID",
+      "input": {
+        "machine_id": "",
+        "temperature": 300.0,
+        "vibration": 1500.0,
+        "torque": 40.0,
+        "type": "M"
+      },
+      "expected": {
+        "status_code": 422,
+        "error_type": "validation_error",
+        "error_field": "machine_id"
+      }
+    },
+    {
+      "name": "Invalid Temperature",
+      "input": {
+        "machine_id": "EDGE-001",
+        "temperature": "invalid",
+        "vibration": 1500.0,
+        "torque": 40.0,
+        "type": "M"
+      },
+      "expected": {
+        "status_code": 422,
+        "error_type": "validation_error",
+        "handled_gracefully": true
+      }
+    },
+    {
+      "name": "Negative Values",
+      "input": {
+        "machine_id": "EDGE-002",
+        "temperature": -50.0,
+        "vibration": -1000.0,
+        "torque": -10.0,
+        "type": "M"
+      },
+      "expected": {
+        "anomaly_detected": true,
+        "severity": "HIGH",
+        "confidence_min": 0.7,
+        "anomaly_types": ["ML_Detected"],
+        "handled_negative": true
+      }
+    },
+    {
+      "name": "Zero Values",
+      "input": {
+        "machine_id": "EDGE-003",
+        "temperature": 0.0,
+        "vibration": 0.0,
+        "torque": 0.0,
+        "type": "M"
+      },
+      "expected": {
+        "anomaly_detected": true,
+        "severity": "HIGH",
+        "confidence_min": 0.7,
+        "anomaly_types": ["ML_Detected"],
+        "handled_zero": true
+      }
+    },
+    {
+      "name": "Extreme High Values",
+      "input": {
+        "machine_id": "EDGE-004",
+        "temperature": 500.0,
+        "vibration": 10000.0,
+        "torque": 200.0,
+        "type": "M"
+      },
+      "expected": {
+        "anomaly_detected": true,
+        "severity": "HIGH",
+        "confidence_min": 0.8,
+        "anomaly_types": ["ML_Detected"],
+        "handled_extreme": true
+      }
+    },
+    {
+      "name": "Missing Sensor Data",
+      "input": {
+        "machine_id": "EDGE-005",
+        "temperature": 300.0,
+        "type": "M"
+      },
+      "expected": {
+        "anomaly_detected": false,
+        "severity": "LOW",
+        "confidence_max": 0.2,
+        "handled_missing": true,
+        "defaults_used": true
+      }
+    },
+    {
+      "name": "Invalid Machine Type",
+      "input": {
+        "machine_id": "EDGE-006",
+        "temperature": 300.0,
+        "vibration": 1500.0,
+        "torque": 40.0,
+        "type": "INVALID"
+      },
+      "expected": {
+        "anomaly_detected": false,
+        "severity": "LOW",
+        "confidence_max": 0.2,
+        "handled_invalid_type": true,
+        "fallback_encoding": true
+      }
+    },
+    {
+      "name": "Very Large Batch",
+      "input": {
+        "data": [
+          {
+            "machine_id": "LARGE-001",
+            "temperature": 300.0,
+            "vibration": 1500.0,
+            "torque": 40.0,
+            "type": "M"
+          }
+        ] * 100
+      },
+      "expected": {
+        "total_items": 100,
+        "status_code": 200,
+        "max_response_time_ms": 2000,
+        "memory_usage_stable": true,
+        "no_timeouts": true
+      }
+    }
+  ]
+}
