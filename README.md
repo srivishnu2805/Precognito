@@ -2,146 +2,106 @@
 
 AI-powered predictive maintenance platform designed to eliminate unplanned downtime. By analyzing real-time IoT sensor telemetry and historical patterns, it identifies anomalies and predicts Remaining Useful Life (RUL) before failures occur.
 
+## 🚀 Project Status: Production Ready Prototype
+
+We have successfully integrated all core functional modules defined in the BRD. The system is capable of end-to-end telemetry ingestion, AI-driven analysis, and automated maintenance workflow management.
+
+### Core Capabilities
+- **Real-time Ingestion**: Supports HTTP and MQTT (Mosquitto) for industrial IoT data.
+- **AI Analytics**: ML-based Anomaly Detection (Isolation Forest) and RUL Estimation (XGBoost).
+- **Edge Simulation**: Local DSP logic (RMS/FFT) simulated to minimize network load.
+- **Automated Workflow**: High-severity anomalies automatically trigger Work Orders in PostgreSQL.
+- **JIT Inventory**: Predictive procurement alerts based on part lead times and asset RUL.
+- **Integrated Notifications**: Real-time push alerts via **NTFY.sh** (SSE Integrated).
+- **Advanced Dashboarding**: OEE calculation, Audit Logging, and EHS Thermal Safety monitoring.
+- **PWA support**: Fully mobile-optimized with offline documentation caching.
+
 ## Project Structure
 
 ```
 precognito/
-├── frontend/              # Next.js PWA
+├── frontend/              # Next.js 16 PWA
 │   ├── src/
-│   │   ├── app/          # Pages (Next.js App Router)
-│   │   ├── components/   # React components
-│   │   └── lib/          # Types, mock data, auth
-│   └── public/            # Static assets
+│   │   ├── app/          # App Router & Protected Routes
+│   │   ├── components/   # Dashboard & Visualization components
+│   │   └── lib/          # API client, types, constants
+│   └── public/            # Service Workers & Manifest
 │
 ├── backend/               # FastAPI Python package
-│   ├── precognito/       # Main package
-│   │   ├── __init__.py
-│   │   ├── anomaly/     # Anomaly detection
-│   │   ├── dashboard/    # Dashboard API
-│   │   ├── financial/    # Financial analytics
-│   │   ├── ingestion/    # IoT data ingestion
-│   │   ├── predictive/   # RUL prediction
-│   │   └── work_orders/  # Work order management
-│   ├── tests/            # Unit tests
-│   ├── pyproject.toml    # Python dependencies
-│   └── uv.lock           # Locked dependencies
+│   ├── precognito/       # Integrated Core logic
+│   │   ├── anomaly/     # ML Anomaly Detection Engine
+│   │   ├── ingestion/    # Unified HTTP/MQTT Pipeline & DSP
+│   │   ├── predictive/   # RUL Inference Engine (XGBoost)
+│   │   ├── inventory/    # JIT Supply Chain Management
+│   │   └── work_orders/  # Task Automation & Audit Trail
+│   └── tests/            # Pytest suite (Unit & Integration)
 │
+├── docker-compose.yml     # PostgreSQL, InfluxDB, Mosquitto
 ├── BRD.md                 # Business Requirements Document
-└── README.md
+└── main.py                # Unified Process Runner (API + MQTT)
 ```
 
 ## Getting Started
 
-### Prerequisites
+### 1. Infrastructure (Docker)
+```bash
+docker compose up -d
+```
+Starts PostgreSQL (Relational), InfluxDB (Time-series), and Mosquitto (MQTT Broker).
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| [Bun](https://bun.sh) | Latest | Frontend runtime |
-| [uv](https://github.com/astral-sh/uv) | Latest | Python package manager |
-| Python | 3.12+ | Backend runtime |
+### 2. Backend Setup
+```bash
+uv sync --all-extras
+# Run unified server (API + MQTT Worker)
+export PYTHONPATH=$PYTHONPATH:$(pwd)/backend
+python3 main.py
+```
 
-### Frontend Setup
-
+### 3. Frontend Setup
 ```bash
 cd frontend
 bun install
 bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
-
-### Backend Setup
-
+### 4. Data Simulation
 ```bash
-# Navigate to backend
-cd backend
-
-# Install dependencies
-uv sync
-
-# Activate virtual environment
-source .venv/bin/activate
-
-# Run development server
-uv run uvicorn precognito.api:app --reload
+# Start sending simulated 1kHz telemetry via MQTT
+python3 backend/precognito/ingestion/simulator.py --mode mqtt
 ```
 
-Open API docs at [http://localhost:8000/docs](http://localhost:8000/docs)
-
-## Backend Modules
+## Backend Modules Status
 
 | Module | Description | Status |
 |--------|-------------|--------|
-| `anomaly` | Anomaly detection engine | Planned |
-| `dashboard` | Dashboard API endpoints | Planned |
-| `financial` | Financial analytics | Planned |
-| `ingestion` | IoT data ingestion (MQTT) | Planned |
-| `predictive` | RUL prediction models | Planned |
-| `work_orders` | Work order management | Planned |
+| `anomaly` | Isolation Forest detection | ✅ Integrated |
+| `ingestion` | Unified Pipeline + DSP | ✅ Integrated |
+| `predictive` | RUL Estimation (XGBoost) | ✅ Integrated |
+| `work_orders` | Automation & QR Check-in | ✅ Integrated |
+| `inventory` | JIT Procurement & Storage | ✅ Integrated |
+| `financial` | ROI & Cost Estimation | 🚧 In Progress |
 
-## Frontend Pages
+## Frontend Role-Based Access
 
 | Route | Description | Access |
 |-------|-------------|--------|
-| `/` | Landing page | Public |
-| `/login` | Login (role selection) | Public |
-| `/dashboard` | Role-based dashboard | All roles |
-| `/assets` | Asset health monitoring | Admin, Manager, OT, Tech |
-| `/assets/[id]` | Asset detail + FFT | Admin, Manager, OT, Tech |
-| `/alerts` | Alert feed | Admin, OT, Tech |
-| `/edge` | Sensor connectivity | Admin, OT |
-| `/reports` | Report generation | Admin, Manager |
-| `/inventory` | Spare parts management | Admin, Store |
-| `/work-orders` | Field check-in & docs | Admin, Tech |
-| `/executive` | Financial analytics | Admin, Manager |
-| `/analytics` | Model performance | Admin, Manager |
-| `/ehs` | Thermal safety alerts | Admin, OT |
-| `/admin` | User management | Admin |
-
-## User Roles
-
-| Role | Description |
-|------|-------------|
-| **Admin** | Full access + user management |
-| **Plant Manager** | Executive dashboards, reports |
-| **OT Specialist** | Monitoring, alerts, sensors |
-| **Technician** | Work orders, field operations |
-| **Store Manager** | Inventory management |
-
-**Demo Login:** Any credentials work. Select a role to test different permission levels.
+| `/dashboard` | Live Health Overviews | All roles |
+| `/assets` | Real-time Telemetry | Maintenance & Admin |
+| `/reports` | PDF/CSV Data Exports | Manager & Admin |
+| `/work-orders` | QR Validation & Manuals | Technician |
+| `/inventory` | Supply Chain & JIT | Store Manager |
+| `/executive` | OEE & Financial ROI | Executive |
+| `/settings` | NTFY Push Configuration | All roles |
 
 ## Testing
 
 ```bash
-# Frontend build
-cd frontend && bun run build
+# Run all 21 backend unit tests
+pytest
 
-# Backend tests
-cd backend && uv run pytest tests/
+# Run frontend vitest
+cd frontend && bun run test
 ```
 
-## Tech Stack
-
-### Frontend
-- Next.js 16 (App Router)
-- React 19
-- TypeScript
-- Tailwind CSS v4
-- Recharts
-- Bun runtime
-
-### Backend
-- FastAPI
-- SQLAlchemy + AsyncPG
-- InfluxDB
-- Paho-MQTT
-- scikit-learn
-- Python 3.12+
-
-## Documentation
-
-- [BRD.md](./BRD.md) - Business Requirements Document
-
 ## License
-
 MIT License - see [LICENSE](./LICENSE) for details.

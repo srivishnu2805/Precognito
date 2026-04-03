@@ -17,6 +17,7 @@ const allNavItems = [
   { href: "/analytics", label: "Analytics" },
   { href: "/ehs", label: "EHS" },
   { href: "/admin", label: "Admin" },
+  { href: "/settings", label: "Settings" },
 ];
 
 export function Sidebar() {
