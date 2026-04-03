@@ -77,7 +77,7 @@ def run_mqtt_simulator(broker, port, device_id, interval):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Precognito Sensor Simulator")
-    parser.add_argument("--mode", choices=["http", "mqtt"], default="http", help="Simulator mode")
+    parser.add_argument("--mode", choices=["http", "mqtt"], default="mqtt", help="Simulator mode")
     parser.add_argument("--url", default="http://localhost:8000/ingest/dev", help="HTTP Ingestion URL")
     parser.add_argument("--broker", default="localhost", help="MQTT Broker address")
     parser.add_argument("--port", type=int, default=1883, help="MQTT Port")
