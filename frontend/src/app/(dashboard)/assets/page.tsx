@@ -28,8 +28,9 @@ export default function AssetsPage() {
       try {
         const data = await api.getAssets();
         setAssets(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Failed to load assets";
+        setError(message);
       } finally {
         setLoading(false);
       }

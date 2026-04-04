@@ -15,16 +15,16 @@ describe('reporting utility', () => {
 
   it('downloadCSV should trigger click on hidden link', () => {
     const data = [{ col1: 'val1' }];
-    const mockLink = {
+    const mockLink: HTMLAnchorElement = {
       setAttribute: vi.fn(),
       style: {},
       click: vi.fn(),
-    };
+    } as unknown as HTMLAnchorElement;
     
     // Mock document.createElement
-    const spy = vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
-    const appendSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink as any);
-    const removeSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink as any);
+    const spy = vi.spyOn(document, 'createElement').mockReturnValue(mockLink);
+    const appendSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink);
+    const removeSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink);
 
     downloadCSV(data, 'test');
     

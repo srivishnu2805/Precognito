@@ -26,9 +26,10 @@ export default function AlertsPage() {
       try {
         const data = await api.getAlerts();
         setAlerts(data);
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Failed to load alerts";
         console.error("Failed to load alerts", err);
-        setError(err.message);
+        setError(message);
       } finally {
         setLoading(false);
       }

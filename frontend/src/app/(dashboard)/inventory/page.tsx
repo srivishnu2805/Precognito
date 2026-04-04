@@ -12,6 +12,7 @@ import { PartsTable } from "@/components/dashboard/PartsTable";
 import { StockAlertCard } from "@/components/dashboard/StockAlertCard";
 import { WorkOrderRow } from "@/components/dashboard/WorkOrderRow";
 import { api } from "@/lib/api";
+import { SparePart } from "@/lib/types";
 
 /**
  * InventoryPage component for managing plant inventory and JIT alerts.
@@ -65,15 +66,17 @@ export default function InventoryPage() {
     category: p.category
   }));
 
-  const mappedJitAlerts = jitAlerts.map((a, idx) => ({
+  const mappedJitAlerts: SparePart[] = jitAlerts.map((a, idx) => ({
     id: `jit-${idx}`,
     name: a.partName,
-    partNumber: a.deviceId, // Using deviceId as reference
+    partNumber: a.deviceId,
+    category: "JIT PROCUREMENT",
     stockLevel: a.rulHours,
     reorderPoint: a.leadTimeHours,
-    status: a.priority,
-    leadTime: `${a.leadTimeHours}h`,
-    category: "JIT PROCUREMENT"
+    leadTimeDays: Math.ceil(a.leadTimeHours / 24),
+    unitCost: 0,
+    supplier: "System Default",
+    status: a.priority as "LOW_STOCK" | "OUT_OF_STOCK"
   }));
 
   if (loading && spareParts.length === 0) {
@@ -111,7 +114,7 @@ export default function InventoryPage() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {mappedJitAlerts.map((part) => (
-              <StockAlertCard key={part.id} part={part as any} />
+              <StockAlertCard key={part.id} part={part} />
             ))}
           </div>
         </section>

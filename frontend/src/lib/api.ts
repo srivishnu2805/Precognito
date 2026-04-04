@@ -46,6 +46,46 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
 }
 
 /**
+ * Input interface for creating a new asset.
+ */
+export interface CreateAssetInput {
+  assetId: string;
+  assetName: string;
+  manual?: string;
+  mttr?: string;
+}
+
+/**
+ * Input interface for creating a new audit/work order.
+ */
+export interface CreateAuditInput {
+  assetId: string;
+  status: string;
+  remarks?: string;
+  assignedTo?: string;
+}
+
+/**
+ * Input interface for completing a work order.
+ */
+export interface CompleteWorkOrderInput {
+  resolution: string;
+  partId?: number;
+  quantityUsed: number;
+  laborHours: number;
+}
+
+/**
+ * Backend response for device heartbeat data.
+ */
+export interface HeartbeatResponse {
+  deviceId: string;
+  lastSeen: string;
+  status: "Active" | "Inactive";
+  secondsSinceLast: number;
+}
+
+/**
  * Object containing all API interaction methods.
  */
 export const api = {
@@ -177,7 +217,7 @@ export const api = {
    * @param {Object} data Asset data.
    * @returns {Promise<any>} The created asset.
    */
-  createAsset: (data: any) => 
+  createAsset: (data: CreateAssetInput) => 
     fetchWithAuth("/work-orders/assets/", { method: "POST", body: JSON.stringify(data) }),
 
   /**
@@ -186,7 +226,7 @@ export const api = {
    * @param {Object} data Audit data.
    * @returns {Promise<any>} The created audit.
    */
-  createAudit: (data: any) => 
+  createAudit: (data: CreateAuditInput) => 
     fetchWithAuth("/work-orders/audit/", { method: "POST", body: JSON.stringify(data) }),
 
   /**
@@ -196,6 +236,6 @@ export const api = {
    * @param {Object} data Completion data.
    * @returns {Promise<any>} The result.
    */
-  completeWorkOrder: (id: number, data: any) => 
+  completeWorkOrder: (id: number, data: CompleteWorkOrderInput) => 
     fetchWithAuth(`/work-orders/audit/${id}/complete`, { method: "PATCH", body: JSON.stringify(data) }),
 };

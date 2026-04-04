@@ -89,7 +89,7 @@ export default function WorkOrdersPage() {
     try {
       await api.completeWorkOrder(completingTask.id, {
         resolution,
-        partId: selectedPart ? parseInt(selectedPart) : null,
+        partId: selectedPart ? parseInt(selectedPart) : undefined,
         quantityUsed: partQty,
         laborHours: laborHours
       });
@@ -98,8 +98,9 @@ export default function WorkOrdersPage() {
       setResolution("");
       setSelectedPart("");
       loadData();
-    } catch (err: any) {
-      alert(`Error: ${err.message}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "An unknown error occurred";
+      alert(`Error: ${message}`);
     }
   };
 

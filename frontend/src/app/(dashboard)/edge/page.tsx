@@ -27,7 +27,7 @@ export default function EdgePage() {
         const data = await api.getHeartbeats();
         
         // Map backend heartbeats to SensorStatus type
-        const mappedSensors: SensorStatus[] = data.map((hb: any) => ({
+        const mappedSensors: SensorStatus[] = data.map((hb: import("@/lib/api").HeartbeatResponse) => ({
           sensorId: hb.deviceId,
           name: hb.deviceId.split("_").map((s: string) => s.charAt(0).toUpperCase() + s.slice(1)).join(" "),
           status: hb.status === "Active" ? "ONLINE" : "OFFLINE",

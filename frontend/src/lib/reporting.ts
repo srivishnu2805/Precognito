@@ -7,10 +7,10 @@ import autoTable from "jspdf-autotable";
 
 /**
  * Download data as CSV.
- * @param {any[]} data The array of objects to export.
+ * @param {Record<string, unknown>[]} data The array of objects to export.
  * @param {string} fileName The name of the file to save.
  */
-export function downloadCSV(data: any[], fileName: string) {
+export function downloadCSV(data: Record<string, unknown>[], fileName: string) {
   if (data.length === 0) return;
 
   const headers = Object.keys(data[0]).join(",");
@@ -35,11 +35,11 @@ export function downloadCSV(data: any[], fileName: string) {
 
 /**
  * Download data as a formal, signed PDF report.
- * @param {any[]} data The array of objects to export as a table.
+ * @param {Record<string, unknown>[]} data The array of objects to export as a table.
  * @param {string} title The title of the report.
  * @param {string} fileName The name of the file to save.
  */
-export function downloadPDF(data: any[], title: string, fileName: string) {
+export function downloadPDF(data: Record<string, unknown>[], title: string, fileName: string) {
   if (data.length === 0) return;
 
   const doc = new jsPDF();
@@ -68,7 +68,7 @@ export function downloadPDF(data: any[], title: string, fileName: string) {
 
   // --- Data Table ---
   const headers = Object.keys(data[0]);
-  const body = data.map(obj => Object.values(obj)) as any[][];
+  const body = data.map((obj) => Object.values(obj).map((val) => String(val)));
 
   autoTable(doc, {
     startY: 75,
@@ -81,7 +81,8 @@ export function downloadPDF(data: any[], title: string, fileName: string) {
   });
 
   // --- Signature Block (ISO Compliance) ---
-  const finalY = (doc as any).lastAutoTable.finalY + 30;
+  const docWithTable = doc as unknown as { lastAutoTable?: { finalY: number } };
+  const finalY = (docWithTable.lastAutoTable?.finalY ?? 0) + 30;
   
   if (finalY < 250) {
     doc.setDrawColor(200);

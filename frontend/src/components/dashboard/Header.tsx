@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
 import { api } from "@/lib/api";
 import { NotificationBell } from "./NotificationBell";
-import { roleColors, UserRole } from "@/lib/constants";
+import { roleColors, getUserRole } from "@/lib/constants";
 import { useTheme } from "@/lib/ThemeContext";
 
 /**
@@ -32,7 +32,7 @@ export function Header() {
 
   if (!user) return null;
 
-  const role = ((user as any).role || "TECHNICIAN") as UserRole;
+  const role = getUserRole(user);
 
   return (
     <header

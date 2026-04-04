@@ -50,9 +50,10 @@ export default function AssetDetailPage({ params }: AssetDetailPageProps) {
         setAsset(currentAsset);
         setTelemetry(telData);
         setPredictions(predData);
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Failed to load asset data";
         console.error("Failed to load asset data", err);
-        setError(err.message);
+        setError(message);
       } finally {
         setLoading(false);
       }

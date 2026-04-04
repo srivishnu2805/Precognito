@@ -21,11 +21,10 @@ describe('Sidebar', () => {
           id: '2',
           name: 'Tech User',
           email: 'tech@example.com',
-          role: 'TECHNICIAN',
         },
       },
       isPending: false,
-    } as any)
+    } as never)
 
     render(<Sidebar />)
     expect(screen.getByText('Dashboard')).toBeInTheDocument()

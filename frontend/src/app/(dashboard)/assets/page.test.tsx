@@ -12,7 +12,7 @@ vi.mock('@/lib/api', () => ({
 
 describe('AssetsPage', () => {
   it('renders loading state initially', async () => {
-    (api.getAssets as any).mockResolvedValue([]);
+    vi.mocked(api.getAssets).mockResolvedValue([]);
     render(<AssetsPage />);
     expect(screen.getByText(/Loading assets.../i)).toBeInTheDocument();
   });
@@ -21,7 +21,7 @@ describe('AssetsPage', () => {
     const mockAssets = [
       { id: '1', name: 'Machine A', status: 'GREEN', rms: 1.0, rul: 100, lastUpdated: new Date().toISOString() },
     ];
-    (api.getAssets as any).mockResolvedValue(mockAssets);
+    vi.mocked(api.getAssets).mockResolvedValue(mockAssets as never);
     
     render(<AssetsPage />);
     
@@ -32,7 +32,7 @@ describe('AssetsPage', () => {
   });
 
   it('shows empty state if no assets', async () => {
-    (api.getAssets as any).mockResolvedValue([]);
+    vi.mocked(api.getAssets).mockResolvedValue([]);
     
     render(<AssetsPage />);
     

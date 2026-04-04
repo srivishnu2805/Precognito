@@ -49,7 +49,8 @@ services:
       INFLUX_ORG: ${INFLUX_ORG:-precognito_org}
       INFLUX_BUCKET: ${INFLUX_BUCKET:-precognito_bucket}
       MQTT_BROKER: mosquitto
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-your_super_secret_key_here}
+      BETTER_AUTH_SECRET: fdr6WiAkIlESTZIjLMEAea2ni2PUZAUiTwVu046W5W8=
+      BETTER_AUTH_URL: http://localhost:3000
       ENFORCE_HTTPS: "False"
     ports:
       - "8000:8000"
@@ -64,8 +65,10 @@ services:
       context: .
       target: frontend
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_API_URL: http://api:8000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
+      BETTER_AUTH_SECRET: fdr6WiAkIlESTZIjLMEAea2ni2PUZAUiTwVu046W5W8=
+      BETTER_AUTH_URL: http://localhost:3000
     ports:
       - "3000:3000"
     depends_on:

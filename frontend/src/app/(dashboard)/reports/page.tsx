@@ -71,7 +71,7 @@ export default function ReportsPage() {
    * @returns {Promise<void>}
    */
   const handleDownload = async (report: Report) => {
-    let data: any[] = [];
+    let data: Record<string, unknown>[] = [];
     
     try {
       // Fetch relevant data based on category

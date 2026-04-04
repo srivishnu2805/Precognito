@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
-import { rolePermissions, UserRole } from "@/lib/constants";
+import { rolePermissions, getUserRole } from "@/lib/constants";
 
 const allNavItems = [
   { href: "/dashboard", label: "Dashboard" },
@@ -34,7 +34,7 @@ export function Sidebar() {
   const { data: session } = useSession();
   const user = session?.user;
 
-  const role = ((user as any)?.role || "TECHNICIAN") as UserRole;
+  const role = getUserRole(user);
   const allowedPages = rolePermissions[role] || [];
   
   const navItems = allNavItems.filter(

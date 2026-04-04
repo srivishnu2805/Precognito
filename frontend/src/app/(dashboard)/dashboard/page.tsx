@@ -10,9 +10,9 @@ import { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Asset } from "@/lib/types";
+import { Asset, Alert } from "@/lib/types";
 import Link from "next/link";
-import { rolePermissions, roleColors, UserRole } from "@/lib/constants";
+import { rolePermissions, roleColors, getUserRole } from "@/lib/constants";
 
 /**
  * DashboardPage component for general system oversight and navigation.
@@ -22,7 +22,7 @@ import { rolePermissions, roleColors, UserRole } from "@/lib/constants";
 export default function DashboardPage() {
   const { data: session, isPending } = useSession();
   const [assets, setAssets] = useState<Asset[]>([]);
-  const [recentAlerts, setRecentAlerts] = useState<any[]>([]);
+  const [recentAlerts, setRecentAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -65,7 +65,7 @@ export default function DashboardPage() {
   }
 
   const user = session.user;
-  const role = ((user as any).role || "TECHNICIAN") as UserRole;
+  const role = getUserRole(user);
   const allowedPages = rolePermissions[role] || [];
   
   const stats = {
@@ -138,7 +138,7 @@ export default function DashboardPage() {
                     }`}
                   />
                   <div>
-                    <p className="text-sm text-[#f1f5f9]">{alert.deviceId.split("_").map((s: string) => s.charAt(0).toUpperCase() + s.slice(1)).join(" ")} Alert</p>
+                    <p className="text-sm text-[#f1f5f9]">{alert.assetName} Alert</p>
                     <p className="text-xs text-[#94a3b8]">{alert.message}</p>
                   </div>
                 </div>

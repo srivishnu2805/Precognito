@@ -9,8 +9,9 @@ vi.mock('./auth-client', () => ({
   },
 }));
 
-// Mock global fetch
-global.fetch = vi.fn() as any;
+// Mock global fetch - use unknown intermediate to avoid type mismatch
+const mockFetch = vi.fn();
+global.fetch = mockFetch as unknown as typeof fetch;
 
 describe('api utility', () => {
   beforeEach(() => {
@@ -19,7 +20,7 @@ describe('api utility', () => {
 
   it('fetchWithAuth should handle successful responses', async () => {
     const mockData = { success: true };
-    (global.fetch as any).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: true,
       json: async () => mockData,
     });
@@ -30,7 +31,7 @@ describe('api utility', () => {
   });
 
   it('fetchWithAuth should throw error on non-ok response', async () => {
-    (global.fetch as any).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: false,
       statusText: 'Not Found',
       json: async () => ({ detail: 'Resource not found' }),
@@ -40,7 +41,7 @@ describe('api utility', () => {
   });
 
   it('getAssets should call the correct endpoint', async () => {
-    (global.fetch as any).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: true,
       json: async () => [],
     });
