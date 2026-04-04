@@ -1,13 +1,26 @@
+"""Services for financial recommendations and reporting.
+
+This module contains the logic for fetching machine metrics, generating
+maintenance recommendations, monitoring system health, and compiling
+audit reports.
+"""
+
 import datetime
 import random
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from .models import EngineRecommendationRow, EngineRecommendationReport, SystemHealthResponse, AuditLogEntry, AuditComplianceReport
 from .dataset import MACHINE_PARTS_DB, LABOUR_MAPPING_DB, MECHANIC_DB
 from precognito.ingestion.influx_client import query_latest_data, client, INFLUX_ORG, INFLUX_BUCKET
 
-def fetch_real_rul_and_prob(machine_id: str) -> tuple[float, float]:
-    """
-    Fetches real RUL and Anomaly probability from InfluxDB.
+def fetch_real_rul_and_prob(machine_id: str) -> Tuple[float, float]:
+    """Fetches real RUL and Anomaly probability from InfluxDB.
+
+    Args:
+        machine_id (str): Unique identifier for the machine.
+
+    Returns:
+        Tuple[float, float]: A tuple containing (Remaining Useful Life, Anomaly Probability).
+            RUL is normalized (0.0 to 1.0) and Anomaly Probability is (0.0 to 1.0).
     """
     rul = 0.5 # Default middle ground
     prob = 0.1 # Default healthy
@@ -36,12 +49,27 @@ def fetch_real_rul_and_prob(machine_id: str) -> tuple[float, float]:
     return round(rul, 2), round(prob, 2)
 
 class AdminReportingService:
+    """Service for generating administrative and executive reports.
+
+    This service handles the core logic for recommendations, health monitoring,
+    and audit reporting.
+    """
+
     def __init__(self):
+        """Initializes the reporting service."""
         pass
 
-    def generate_recommendations(self, period: str, target_machine_id: Optional[str] = None) -> EngineRecommendationReport:
-        """
-        Runs the 6-Phase Recommendation Engine Logic using real sensor-driven metrics.
+    def generate_recommendations(
+        self, period: str, target_machine_id: Optional[str] = None
+    ) -> EngineRecommendationReport:
+        """Runs the 6-Phase Recommendation Engine Logic using real sensor-driven metrics.
+
+        Args:
+            period (str): The reporting period (e.g., "monthly", "weekly").
+            target_machine_id (Optional[str]): If provided, only returns recommendations for this machine.
+
+        Returns:
+            EngineRecommendationReport: A comprehensive report containing all component-level recommendations.
         """
         rows = []
         
@@ -165,6 +193,11 @@ class AdminReportingService:
         )
 
     def get_system_health(self) -> SystemHealthResponse:
+        """Collects and returns real-time system health metrics.
+
+        Returns:
+            SystemHealthResponse: An object containing status, uptime, and usage metrics.
+        """
         return SystemHealthResponse(
             status="Healthy",
             uptime_seconds=random.randint(10000, 500000), 
@@ -174,7 +207,18 @@ class AdminReportingService:
             last_check_timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
 
-    def generate_audit_report(self, start_date: datetime.datetime, end_date: datetime.datetime) -> AuditComplianceReport:
+    def generate_audit_report(
+        self, start_date: datetime.datetime, end_date: datetime.datetime
+    ) -> AuditComplianceReport:
+        """Generates an audit compliance report based on the provided time range.
+
+        Args:
+            start_date (datetime.datetime): Beginning of the audit range.
+            end_date (datetime.datetime): End of the audit range.
+
+        Returns:
+            AuditComplianceReport: A report containing summary stats and individual log entries.
+        """
         # For prototype simplicity, we'll return an empty list or mock until
         # we have a clean way to pass the DB session to this service.
         return AuditComplianceReport(

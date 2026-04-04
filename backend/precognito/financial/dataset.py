@@ -1,3 +1,9 @@
+"""Mock datasets for financial and maintenance reporting.
+
+This module provides static data representing machine components, labour costs,
+and mechanic availability for use in the recommendation engine and reports.
+"""
+
 import random
 
 # Phase 1: Datasets
