@@ -3,7 +3,7 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-precognito_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-precognito_password}
       POSTGRES_DB: ${POSTGRES_DB:-precognito}
     ports:
       - "5432:5432"
@@ -16,10 +16,10 @@ services:
     environment:
       DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUX_USER:-admin}
-      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUX_PASSWORD}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUX_PASSWORD:-adminpassword123}
       DOCKER_INFLUXDB_INIT_ORG: ${INFLUX_ORG:-precognito_org}
       DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUX_BUCKET:-precognito_bucket}
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUX_TOKEN}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUX_TOKEN:-precognito_super_secret_token_123}
     ports:
       - "8086:8086"
     volumes:
@@ -43,13 +43,13 @@ services:
       context: .
       target: backend
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-precognito_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-precognito}
+      DATABASE_URL: postgres://${POSTGRES_USER:-precognito_user}:${POSTGRES_PASSWORD:-precognito_password}@postgres:5432/${POSTGRES_DB:-precognito}
       INFLUX_URL: http://influxdb:8086
-      INFLUX_TOKEN: ${INFLUX_TOKEN}
+      INFLUX_TOKEN: ${INFLUX_TOKEN:-precognito_super_secret_token_123}
       INFLUX_ORG: ${INFLUX_ORG:-precognito_org}
       INFLUX_BUCKET: ${INFLUX_BUCKET:-precognito_bucket}
       MQTT_BROKER: mosquitto
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-your_super_secret_key_here}
       ENFORCE_HTTPS: "False"
     ports:
       - "8000:8000"
