@@ -349,9 +349,40 @@ class AnomalyDetector:
 
             confidence = min(max(confidence, 0.0), 1.0)
 
+            anomaly_types = []
+            anomaly_details = {}
+            if is_anomaly:
+                # Identify contributing features from extreme values
+                extreme_feature_indices = np.where(np.abs(features_scaled[0]) > 3.5)[0]
+                feature_names = df_features.columns.tolist()
+                
+                # Reverse mapping from training features to simple sensor names
+                reverse_feature_map = {
+                    "Air temperature [K]": "temperature",
+                    "Process temperature [K]": "temperature",
+                    "Rotational speed [rpm]": "vibration",
+                    "Torque [Nm]": "torque",
+                    "Tool wear [min]": "tool_wear",
+                }
+
+                contributing_sensors = set()
+                if len(extreme_feature_indices) > 0:
+                    for i in extreme_feature_indices:
+                        feature_name = feature_names[i]
+                        simple_name = reverse_feature_map.get(feature_name, feature_name)
+                        contributing_sensors.add(simple_name)
+                        if simple_name in data:
+                            anomaly_details[simple_name] = data[simple_name]
+                
+                if contributing_sensors:
+                    anomaly_types.extend(list(contributing_sensors))
+                else:
+                    anomaly_types.append("ML model")
+
             return {
                 "anomaly_detected": is_anomaly,
-                "anomaly_types": ["ML_Detected"] if is_anomaly else [],
+                "anomaly_types": anomaly_types,
+                "anomaly_details": anomaly_details,
                 "confidence": confidence,
                 "score": anomaly_score,
                 "method": "ML_IsolationForest",
@@ -434,12 +465,31 @@ class AnomalyDetector:
         Returns:
             str: Combined reason string.
         """
-        reasons = []
-        if pattern_result["anomaly_detected"]:
-            reasons.append(pattern_result["reason"])
-        if ml_result["anomaly_detected"]:
-            reasons.append("Threshold-based detection")
-        return "; ".join(reasons) if reasons else "No anomalies detected"
+        reasons = set()
+        
+        if pattern_result.get("anomaly_detected") and pattern_result.get("spike_anomalies"):
+            for details in pattern_result["spike_anomalies"].values():
+                reasons.add(details['reason'])
+
+        if ml_result.get("anomaly_detected"):
+            if ml_result.get("method") == "Threshold":
+                if ml_result.get("anomaly_types"):
+                    reasons.add(f"Threshold exceeded for: {', '.join(ml_result['anomaly_types'])}")
+                else:
+                    reasons.add("Threshold exceeded")
+            else:  # ML_IsolationForest
+                if ml_result.get("anomaly_details"):
+                    details = [f"{sensor}={value:.2f}" for sensor, value in ml_result["anomaly_details"].items()]
+                    reasons.add(f"ML detected: {', '.join(details)}")
+                elif ml_result.get("anomaly_types") and "ML model" not in ml_result["anomaly_types"]:
+                    reasons.add(f"ML model detected anomaly in: {', '.join(sorted(ml_result['anomaly_types']))}")
+                else:
+                    reasons.add("ML model detected an anomaly")
+        
+        if not reasons and (pattern_result.get("anomaly_detected") or ml_result.get("anomaly_detected")):
+            reasons.add("An anomaly was detected")
+
+        return " | ".join(sorted(list(reasons))) if reasons else "No anomalies detected"
 
     def _error_response(self, data: Dict, timestamp: str, error: str) -> Dict:
         """Constructs a fallback response when detection logic fails.

@@ -1,8 +1,8 @@
 """
 Utility functions for work order management, including automated creation and assignment.
 """
-from precognito.work_orders.database import SessionLocal
-from precognito.work_orders import models
+from .database import SessionLocal
+from . import models
 from datetime import datetime, timezone
 import logging
 

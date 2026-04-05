@@ -19,48 +19,27 @@ interface User {
   lastActive: string;
 }
 
-const initialUsers: User[] = [
-  { id: "USR-001", name: "Karthik Rao", email: "karthik.rao@precognito.io", role: "ADMIN", status: "ACTIVE", lastActive: "2026-03-23T10:30:00" },
-  { id: "USR-002", name: "Anita Sharma", email: "anita.sharma@precognito.io", role: "MANAGER", status: "ACTIVE", lastActive: "2026-03-23T09:15:00" },
-  { id: "USR-003", name: "Arjun Patel", email: "arjun.patel@precognito.io", role: "OT_SPECIALIST", status: "ACTIVE", lastActive: "2026-03-23T08:45:00" },
-  { id: "USR-004", name: "Raj Kumar", email: "raj.kumar@precognito.io", role: "TECHNICIAN", status: "ACTIVE", lastActive: "2026-03-22T16:30:00" },
-  { id: "USR-005", name: "Vikram Singh", email: "vikram.singh@precognito.io", role: "STORE_MANAGER", status: "ACTIVE", lastActive: "2026-03-23T07:00:00" },
-  { id: "USR-006", name: "Sanjay Gupta", email: "sanjay.gupta@precognito.io", role: "OT_SPECIALIST", status: "INACTIVE", lastActive: "2026-03-15T14:20:00" },
-];
-
-const roles: { value: UserRole; label: string }[] = [
-  { value: "ADMIN", label: "Administrator" },
-  { value: "MANAGER", label: "Plant Manager" },
-  { value: "OT_SPECIALIST", label: "OT Specialist" },
-  { value: "TECHNICIAN", label: "Technician" },
-  { value: "STORE_MANAGER", label: "Store Manager" },
-];
-
-/**
- * AdminPage component for user administration and audit trail viewing.
- * 
- * @returns {JSX.Element} The rendered admin page.
- */
 export default function AdminPage() {
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [newUser, setNewUser] = useState({ name: "", email: "", role: "TECHNICIAN" as UserRole });
 
   useEffect(() => {
-    /**
-     * Fetches audit logs from the API.
-     */
-    async function loadAuditLogs() {
+    async function loadData() {
       try {
-        const logs = await api.getAuditLogs();
-        setAuditLogs(logs);
+        const [usersData, logsData] = await Promise.all([
+          api.getUsers(),
+          api.getAuditLogs(),
+        ]);
+        setUsers(usersData);
+        setAuditLogs(logsData);
       } catch (err) {
-        console.error("Failed to load audit logs", err);
+        console.error("Failed to load admin data", err);
       }
     }
-    loadAuditLogs();
+    loadData();
   }, []);
 
   /**

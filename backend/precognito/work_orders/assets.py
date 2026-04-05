@@ -3,10 +3,10 @@ API router for managing industrial assets.
 """
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from precognito.work_orders.database import SessionLocal
-from precognito.work_orders.models import Asset
-from precognito.auth import manager_above
-from precognito.work_orders.schemas import AssetCreateRequest
+from .database import SessionLocal
+from .models import Asset
+from ..auth import manager_above
+from .schemas import AssetCreateRequest
 
 router = APIRouter(prefix="/assets", tags=["Assets"])
 

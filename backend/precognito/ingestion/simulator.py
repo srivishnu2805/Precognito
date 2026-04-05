@@ -19,7 +19,7 @@ if backend_dir not in sys.path:
 
 import paho.mqtt.client as mqtt
 import numpy as np
-from precognito.ingestion.dsp import process_raw_edge_data
+from ..ingestion.dsp import process_raw_edge_data
 
 # Anomaly probability weights - rare but impactful
 ANOMALY_TYPES = {
@@ -228,7 +228,8 @@ def run_http_simulator(url, device_id, interval, auth_token):
                 print(f"HTTP Error: {e}")
             time.sleep(interval)
     except KeyboardInterrupt:
-        print("\nStopping HTTP Simulator...")
+        print("
+Stopping HTTP Simulator...")
 
 
 def run_mqtt_simulator(broker, port, device_id, interval):
@@ -252,7 +253,8 @@ def run_mqtt_simulator(broker, port, device_id, interval):
             print(f"MQTT Published to {topic}")
             time.sleep(interval)
     except KeyboardInterrupt:
-        print("\nStopping MQTT Simulator...")
+        print("
+Stopping MQTT Simulator...")
     except Exception as e:
         print(f"MQTT Simulator error: {e}")
 

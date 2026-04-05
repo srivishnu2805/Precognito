@@ -3,18 +3,18 @@ Core ingestion module that orchestrates the processing of incoming sensor data.
 """
 
 import logging
-from precognito.ingestion.preprocess import preprocess
-from precognito.ingestion.heartbeat import update_heartbeat, check_device_status
-from precognito.ingestion.alerts import check_alerts
-from precognito.ingestion.influx_client import (
+from .preprocess import preprocess
+from .heartbeat import update_heartbeat, check_device_status
+from .alerts import check_alerts
+from .influx_client import (
     save_sensor_data,
     save_anomaly_result,
     save_predictive_result,
     check_sustained_thermal,
 )
-from precognito.anomaly.core import detect_anomaly
-from precognito.predictive.predictive_engine import predict_rul
-from precognito.work_orders.utils import create_automatic_work_order
+from ..anomaly.core import detect_anomaly
+from ..predictive.predictive_engine import predict_rul
+from ..work_orders.utils import create_automatic_work_order
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ def process_ingestion(device_id: str, raw_data: dict):
 
         if is_sustained_thermal:
             from influxdb_client import Point, WritePrecision
-            from precognito.ingestion.influx_client import (
+            from .influx_client import (
                 write_api,
                 INFLUX_BUCKET,
                 INFLUX_ORG,

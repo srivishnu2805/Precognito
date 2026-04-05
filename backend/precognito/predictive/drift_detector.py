@@ -4,9 +4,9 @@ Monitors performance of predictive models by comparing predictions with actual s
 """
 import logging
 from datetime import datetime, timedelta, timezone
-from precognito.ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_api
-from precognito.work_orders.database import SessionLocal
-from precognito.work_orders.models import Audit
+from ..ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_api
+from ..work_orders.database import SessionLocal
+from ..work_orders.models import Audit
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

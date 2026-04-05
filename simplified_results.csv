@@ -1,11 +1,11 @@
 machine_id,timestamp,anomaly_detected,severity,confidence,reason,temperature,vibration,torque
-M1,2026-04-05T06:26:14.430550,True,MODERATE,0.02803519336147231,Threshold-based detection,305.0,1500.0,45.0
-M1,2026-04-05T06:26:14.445572,True,HIGH,0.8,Threshold-based detection,307.0,1520.0,44.0
-M1,2026-04-05T06:26:14.459593,True,HIGH,0.8,Threshold-based detection,306.5,1510.0,45.5
-M1,2026-04-05T06:26:14.474323,True,HIGH,0.8,Threshold-based detection,450.0,1500.0,45.0
-M2,2026-04-05T06:26:14.488069,True,HIGH,0.8,Threshold-based detection,308.0,1490.0,46.0
-M2,2026-04-05T06:26:14.502132,True,HIGH,0.8,Threshold-based detection,310.0,1510.0,47.0
-M2,2026-04-05T06:26:14.517813,True,HIGH,1.0,Spike: torque=45.00 deviates 7.67σ from mean 46.15; Threshold-based detection,250.0,1500.0,45.0
-M3,2026-04-05T06:26:14.531484,True,HIGH,0.8,Threshold-based detection,305.0,3000.0,45.0
-M4,2026-04-05T06:26:14.545276,True,HIGH,0.8,Threshold-based detection,400.0,2500.0,80.0
-M5,2026-04-05T06:26:14.559525,True,HIGH,0.8,Threshold-based detection,500.0,3500.0,100.0
+M1,2026-04-05T12:55:16.357086,True,MODERATE,0.02803519336147231,ML model detected an anomaly,305.0,1500.0,45.0
+M1,2026-04-05T12:55:16.373271,True,HIGH,0.8,ML model detected anomaly in: temperature,307.0,1520.0,44.0
+M1,2026-04-05T12:55:16.388404,True,HIGH,0.8,ML model detected anomaly in: temperature,306.5,1510.0,45.5
+M1,2026-04-05T12:55:16.405483,True,HIGH,0.8,ML model detected anomaly in: temperature,450.0,1500.0,45.0
+M2,2026-04-05T12:55:16.421392,True,HIGH,0.8,ML model detected anomaly in: temperature,308.0,1490.0,46.0
+M2,2026-04-05T12:55:16.442669,True,HIGH,0.8,ML model detected anomaly in: temperature,310.0,1510.0,47.0
+M2,2026-04-05T12:55:16.469158,True,HIGH,1.0,ML model detected anomaly in: temperature | Spike: temperature=250.00 deviates 10.84σ from mean 303.10 | Spike: torque=45.00 deviates 7.67σ from mean 46.15,250.0,1500.0,45.0
+M3,2026-04-05T12:55:16.486658,True,HIGH,0.8,ML model detected anomaly in: vibration,305.0,3000.0,45.0
+M4,2026-04-05T12:55:16.503022,True,HIGH,0.8,"ML model detected anomaly in: temperature, torque, vibration",400.0,2500.0,80.0
+M5,2026-04-05T12:55:16.519501,True,HIGH,0.8,"ML model detected anomaly in: temperature, torque, vibration",500.0,3500.0,100.0

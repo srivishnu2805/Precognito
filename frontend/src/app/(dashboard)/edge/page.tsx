@@ -44,7 +44,7 @@ export default function EdgePage() {
     }
 
     loadHeartbeats();
-    const interval = setInterval(loadHeartbeats, 10000); // 10s refresh
+    const interval = setInterval(loadHeartbeats, 2000); // 2s refresh
     return () => clearInterval(interval);
   }, []);
 

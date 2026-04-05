@@ -16,9 +16,9 @@ from .models import (
     OEEMetricsResponse,
 )
 from .dataset import MACHINE_PARTS_DB, LABOUR_MAPPING_DB, MECHANIC_DB
-from precognito.ingestion.influx_client import query_latest_data
-from precognito.work_orders.database import SessionLocal
-from precognito.work_orders.models import AuditLog
+from ..ingestion.influx_client import query_latest_data
+from ..work_orders.database import SessionLocal
+from ..work_orders.models import AuditLog
 
 
 def fetch_real_rul_and_prob(machine_id: str) -> Tuple[float, float]:
@@ -156,13 +156,13 @@ class AdminReportingService:
         Returns:
             OEEMetricsResponse: The calculated OEE metrics.
         """
-        from precognito.ingestion.influx_client import (
+        from ..ingestion.influx_client import (
             INFLUX_BUCKET,
             INFLUX_ORG,
             query_api,
         )
-        from precognito.work_orders.database import SessionLocal
-        from precognito.work_orders.models import Audit
+        from ..work_orders.database import SessionLocal
+        from ..work_orders.models import Audit
 
         # Calculate OEE components from real data
         try:
@@ -313,17 +313,17 @@ class AdminReportingService:
         # Active user sessions from database
         db = SessionLocal()
         try:
-            from precognito.work_orders.models import AuditLog
+            from sqlalchemy import func
+            from ..work_orders.models import AuditLog
 
             active_sessions = (
-                db.query(AuditLog)
+                db.query(func.count(AuditLog.userId.distinct()))
                 .filter(
                     AuditLog.timestamp
                     >= datetime.datetime.now(datetime.timezone.utc)
                     - datetime.timedelta(hours=1)
                 )
-                .distinct(AuditLog.userId)
-                .count()
+                .scalar()
             )
         except Exception:
             active_sessions = 5

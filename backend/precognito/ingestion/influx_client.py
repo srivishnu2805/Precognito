@@ -9,7 +9,7 @@ from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import WriteOptions
 from dotenv import load_dotenv
 
-from precognito.utils import influx_read_breaker, influx_write_breaker
+from ..utils import influx_read_breaker, influx_write_breaker
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -74,6 +74,7 @@ def save_anomaly_result(device_id: str, result: dict):
         .tag("severity", result.get("severity", "LOW"))
         .field("anomaly_detected", bool(result.get("anomaly_detected", False)))
         .field("confidence", float(result.get("confidence", 0.0)))
+        .field("reason", result.get("reason", "No reason provided"))
         .time(datetime.now(timezone.utc), WritePrecision.NS)
     )
 

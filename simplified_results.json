@@ -1,10 +1,10 @@
 [
   {
     "machine_id": "M1",
-    "timestamp": "2026-04-05T06:26:14.430550",
+    "timestamp": "2026-04-05T12:55:16.357086",
     "anomaly_detected": true,
     "anomaly_types": [
-      "ML_Detected"
+      "ML model"
     ],
     "severity": "MODERATE",
     "confidence": 0.02803519336147231,
@@ -13,7 +13,7 @@
       "vibration": 1500.0,
       "torque": 45.0
     },
-    "reason": "Threshold-based detection",
+    "reason": "ML model detected an anomaly",
     "pattern_analysis": {
       "anomaly_detected": false,
       "confidence": 0.0,
@@ -22,7 +22,7 @@
     "ml_analysis": {
       "anomaly_detected": "True",
       "anomaly_types": [
-        "ML_Detected"
+        "ML model"
       ],
       "confidence": 0.02803519336147231,
       "score": -0.02803519336147231,
@@ -31,10 +31,10 @@
   },
   {
     "machine_id": "M1",
-    "timestamp": "2026-04-05T06:26:14.445572",
+    "timestamp": "2026-04-05T12:55:16.373271",
     "anomaly_detected": true,
     "anomaly_types": [
-      "ML_Detected"
+      "temperature"
     ],
     "severity": "HIGH",
     "confidence": 0.8,
@@ -43,7 +43,7 @@
       "vibration": 1520.0,
       "torque": 44.0
     },
-    "reason": "Threshold-based detection",
+    "reason": "ML model detected anomaly in: temperature",
     "pattern_analysis": {
       "anomaly_detected": false,
       "confidence": 0.0,
@@ -52,7 +52,7 @@
     "ml_analysis": {
       "anomaly_detected": true,
       "anomaly_types": [
-        "ML_Detected"
+        "temperature"
       ],
       "confidence": 0.8,
       "score": -0.02700007687767203,
@@ -61,10 +61,10 @@
   },
   {
     "machine_id": "M1",
-    "timestamp": "2026-04-05T06:26:14.459593",
+    "timestamp": "2026-04-05T12:55:16.388404",
     "anomaly_detected": true,
     "anomaly_types": [
-      "ML_Detected"
+      "temperature"
     ],
     "severity": "HIGH",
     "confidence": 0.8,
@@ -73,7 +73,7 @@
       "vibration": 1510.0,
       "torque": 45.5
     },
-    "reason": "Threshold-based detection",
+    "reason": "ML model detected anomaly in: temperature",
     "pattern_analysis": {
       "anomaly_detected": false,
       "confidence": 0.0,
@@ -82,7 +82,7 @@
     "ml_analysis": {
       "anomaly_detected": true,
       "anomaly_types": [
-        "ML_Detected"
+        "temperature"
       ],
       "confidence": 0.8,
       "score": -0.03053248848514034,
@@ -91,10 +91,10 @@
   },
   {
     "machine_id": "M1",
-    "timestamp": "2026-04-05T06:26:14.474323",
+    "timestamp": "2026-04-05T12:55:16.405483",
     "anomaly_detected": true,
     "anomaly_types": [
-      "ML_Detected"
+      "temperature"
     ],
     "severity": "HIGH",
     "confidence": 0.8,
@@ -103,7 +103,7 @@
       "vibration": 1500.0,
       "torque": 45.0
     },
-    "reason": "Threshold-based detection",
+    "reason": "ML model detected anomaly in: temperature",
     "pattern_analysis": {
       "anomaly_detected": false,
       "confidence": 0.0,
@@ -112,7 +112,7 @@
     "ml_analysis": {
       "anomaly_detected": true,
       "anomaly_types": [
-        "ML_Detected"
+        "temperature"
       ],
       "confidence": 0.8,
       "score": -0.02803519336147231,
@@ -121,10 +121,10 @@
   },
   {
     "machine_id": "M2",
-    "timestamp": "2026-04-05T06:26:14.488069",
+    "timestamp": "2026-04-05T12:55:16.421392",
     "anomaly_detected": true,
     "anomaly_types": [
-      "ML_Detected"
+      "temperature"
     ],
     "severity": "HIGH",
     "confidence": 0.8,
@@ -133,7 +133,7 @@
       "vibration": 1490.0,
       "torque": 46.0
     },
-    "reason": "Threshold-based detection",
+    "reason": "ML model detected anomaly in: temperature",
     "pattern_analysis": {
       "anomaly_detected": false,
       "confidence": 0.0,
@@ -142,7 +142,7 @@
     "ml_analysis": {
       "anomaly_detected": true,
       "anomaly_types": [
-        "ML_Detected"
+        "temperature"
       ],
       "confidence": 0.8,
       "score": -0.03046905050314408,
@@ -151,10 +151,10 @@
   },
   {
     "machine_id": "M2",
-    "timestamp": "2026-04-05T06:26:14.502132",
+    "timestamp": "2026-04-05T12:55:16.442669",
     "anomaly_detected": true,
     "anomaly_types": [
-      "ML_Detected"
+      "temperature"
     ],
     "severity": "HIGH",
     "confidence": 0.8,
@@ -163,7 +163,7 @@
       "vibration": 1510.0,
       "torque": 47.0
     },
-    "reason": "Threshold-based detection",
+    "reason": "ML model detected anomaly in: temperature",
     "pattern_analysis": {
       "anomaly_detected": false,
       "confidence": 0.0,
@@ -172,7 +172,7 @@
     "ml_analysis": {
       "anomaly_detected": true,
       "anomaly_types": [
-        "ML_Detected"
+        "temperature"
       ],
       "confidence": 0.8,
       "score": -0.03242637535838311,
@@ -181,11 +181,10 @@
   },
   {
     "machine_id": "M2",
-    "timestamp": "2026-04-05T06:26:14.517813",
+    "timestamp": "2026-04-05T12:55:16.469158",
     "anomaly_detected": true,
     "anomaly_types": [
       "temperature",
-      "ML_Detected",
       "torque"
     ],
     "severity": "HIGH",
@@ -195,7 +194,7 @@
       "vibration": 1500.0,
       "torque": 45.0
     },
-    "reason": "Spike: torque=45.00 deviates 7.67\u03c3 from mean 46.15; Threshold-based detection",
+    "reason": "ML model detected anomaly in: temperature | Spike: temperature=250.00 deviates 10.84\u03c3 from mean 303.10 | Spike: torque=45.00 deviates 7.67\u03c3 from mean 46.15",
     "pattern_analysis": {
       "anomaly_detected": true,
       "confidence": 1.0,
@@ -213,7 +212,7 @@
     "ml_analysis": {
       "anomaly_detected": true,
       "anomaly_types": [
-        "ML_Detected"
+        "temperature"
       ],
       "confidence": 0.8,
       "score": -0.04269042247705901,
@@ -222,10 +221,10 @@
   },
   {
     "machine_id": "M3",
-    "timestamp": "2026-04-05T06:26:14.531484",
+    "timestamp": "2026-04-05T12:55:16.486658",
     "anomaly_detected": true,
     "anomaly_types": [
-      "ML_Detected"
+      "vibration"
     ],
     "severity": "HIGH",
     "confidence": 0.8,
@@ -234,7 +233,7 @@
       "vibration": 3000.0,
       "torque": 45.0
     },
-    "reason": "Threshold-based detection",
+    "reason": "ML model detected anomaly in: vibration",
     "pattern_analysis": {
       "anomaly_detected": false,
       "confidence": 0.0,
@@ -243,7 +242,7 @@
     "ml_analysis": {
       "anomaly_detected": true,
       "anomaly_types": [
-        "ML_Detected"
+        "vibration"
       ],
       "confidence": 0.8,
       "score": -0.11575596417814449,
@@ -252,10 +251,12 @@
   },
   {
     "machine_id": "M4",
-    "timestamp": "2026-04-05T06:26:14.545276",
+    "timestamp": "2026-04-05T12:55:16.503022",
     "anomaly_detected": true,
     "anomaly_types": [
-      "ML_Detected"
+      "vibration",
+      "temperature",
+      "torque"
     ],
     "severity": "HIGH",
     "confidence": 0.8,
@@ -264,7 +265,7 @@
       "vibration": 2500.0,
       "torque": 80.0
     },
-    "reason": "Threshold-based detection",
+    "reason": "ML model detected anomaly in: temperature, torque, vibration",
     "pattern_analysis": {
       "anomaly_detected": false,
       "confidence": 0.0,
@@ -273,7 +274,9 @@
     "ml_analysis": {
       "anomaly_detected": true,
       "anomaly_types": [
-        "ML_Detected"
+        "vibration",
+        "temperature",
+        "torque"
       ],
       "confidence": 0.8,
       "score": -0.14917860449200127,
@@ -282,10 +285,12 @@
   },
   {
     "machine_id": "M5",
-    "timestamp": "2026-04-05T06:26:14.559525",
+    "timestamp": "2026-04-05T12:55:16.519501",
     "anomaly_detected": true,
     "anomaly_types": [
-      "ML_Detected"
+      "vibration",
+      "temperature",
+      "torque"
     ],
     "severity": "HIGH",
     "confidence": 0.8,
@@ -294,7 +299,7 @@
       "vibration": 3500.0,
       "torque": 100.0
     },
-    "reason": "Threshold-based detection",
+    "reason": "ML model detected anomaly in: temperature, torque, vibration",
     "pattern_analysis": {
       "anomaly_detected": false,
       "confidence": 0.0,
@@ -303,7 +308,9 @@
     "ml_analysis": {
       "anomaly_detected": true,
       "anomaly_types": [
-        "ML_Detected"
+        "vibration",
+        "temperature",
+        "torque"
       ],
       "confidence": 0.8,
       "score": -0.15573339920738427,

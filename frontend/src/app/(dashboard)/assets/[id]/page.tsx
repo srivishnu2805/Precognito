@@ -47,7 +47,19 @@ export default function AssetDetailPage({ params }: AssetDetailPageProps) {
           return;
         }
 
-        setAsset(currentAsset);
+        const latestPrediction = predData.length > 0 ? predData[predData.length - 1] : null;
+        const latestRUL = latestPrediction ? latestPrediction.predicted_rul_hours : currentAsset.rul;
+        
+        const updatedAsset = { 
+          ...currentAsset, 
+          rul: latestRUL || 0,
+        };
+        
+        if (latestPrediction) {
+          updatedAsset.status = latestPrediction.risk_level === "High-Risk" ? "RED" : latestPrediction.risk_level === "Warning" ? "YELLOW" : "GREEN";
+        }
+
+        setAsset(updatedAsset);
         setTelemetry(telData);
         setPredictions(predData);
       } catch (err: unknown) {

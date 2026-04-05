@@ -30,7 +30,7 @@ export function FaultBadge({ prediction }: FaultBadgeProps) {
           {prediction.type}
         </span>
         <span className="text-sm text-[#94a3b8]">
-          {(prediction.confidence * 100).toFixed(1)}% confidence
+          {(prediction.confidence).toFixed(1)}% confidence
         </span>
       </div>
       <p className="text-sm text-[#94a3b8]">{prediction.recommendation}</p>

@@ -22,8 +22,8 @@ export function FDRGauge({ metrics }: FDRGaugeProps) {
   const avgFDR = metrics.reduce((sum, m) => sum + m.fdr, 0) / metrics.length;
   
   const targetFDR = 5;
-  const fdrPercentage = Math.min((latest.fdr / 20) * 100, 100);
-  const targetPercentage = (targetFDR / 20) * 100;
+  const fdrPercentage = Math.min(latest.fdr, 100);
+  const targetPercentage = targetFDR;
   
   /**
    * Gets the color based on FDR value.
@@ -72,7 +72,7 @@ export function FDRGauge({ metrics }: FDRGaugeProps) {
       <div className="flex justify-between mt-2 text-xs text-[#94a3b8]">
         <span>0%</span>
         <span className="text-[#f1f5f9]">{targetFDR}% (Target)</span>
-        <span>20%</span>
+        <span>100%</span>
       </div>
 
       {isAboveTarget && (

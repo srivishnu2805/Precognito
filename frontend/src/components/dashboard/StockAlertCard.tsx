@@ -28,7 +28,7 @@ export function StockAlertCard({ part }: StockAlertCardProps) {
       if (part.assetId) {
         try {
           const assets = await api.getAssets();
-          const found = assets.find((a) => a.id === part.assetId);
+          const found = assets.find((a: Asset) => a.id === part.assetId);
           setAsset(found || null);
         } catch {
           setAsset(null);

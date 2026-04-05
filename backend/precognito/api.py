@@ -19,19 +19,19 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
-from precognito.logging_utils import setup_logging
+from .logging_utils import setup_logging
 
 # Import dependencies
-from precognito.auth import get_db_pool, admin_only, lead_above, authenticated_user
+from .auth import get_db_pool, admin_only, lead_above, authenticated_user
 
 # Import routers from other modules
-from precognito.work_orders.api import router as workorder_router
-from precognito.inventory.api import router as inventory_router
-from precognito.financial.routes import (
+from .work_orders.api import router as workorder_router
+from .inventory.api import router as inventory_router
+from .financial.routes import (
     router as financial_router,
     get_reporting_service,
 )
-from precognito.financial.models import OEEMetricsResponse
+from .financial.models import OEEMetricsResponse
 
 # Initialize logging before app definition
 setup_logging()
@@ -137,7 +137,7 @@ async def health_check(pool=Depends(get_db_pool)):
     Raises:
         HTTPException: If any of the services are unhealthy.
     """
-    from precognito.ingestion.influx_client import client as influx_client
+    from .ingestion.influx_client import client as influx_client
 
     health_status = {
         "status": "healthy",
@@ -210,20 +210,7 @@ async def get_audit_logs(
     user=lead_above,
     pool=Depends(get_db_pool),
 ):
-    """API endpoint to retrieve recent audit logs.
-
-    Restricted to lead_above roles. Supports pagination and device filtering.
-
-    Args:
-        limit: Maximum number of logs to retrieve. Defaults to 100.
-        offset: Number of logs to skip. Defaults to 0.
-        device_id: Optional filter by device ID.
-        user: The authenticated user.
-        pool: Database connection pool dependency.
-
-    Returns:
-        list: A list of audit log records.
-    """
+    """API endpoint to retrieve recent audit logs."""
     if device_id:
         query = 'SELECT * FROM "audit_log" WHERE "resource" LIKE $1 ORDER BY "timestamp" DESC LIMIT $2 OFFSET $3'
         params = [f"%{device_id}%", limit, offset]
@@ -234,6 +221,40 @@ async def get_audit_logs(
     async with pool.acquire() as conn:
         rows = await conn.fetch(query, *params)
         return [dict(row) for row in rows]
+
+
+@app.get("/users")
+async def get_users(user=admin_only, pool=Depends(get_db_pool)):
+    """Retrieves a list of all users.
+
+    Requires ADMIN role.
+    """
+    query = """
+        SELECT
+            u.id,
+            u.name,
+            u.email,
+            u.role,
+            u.image,
+            (SELECT MAX("expiresAt") FROM session WHERE "userId" = u.id) as "lastActive"
+        FROM "user" u
+        ORDER BY u.name
+    """
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(query)
+        # Manually determine status based on lastActive
+        users = []
+        for row in rows:
+            user_dict = dict(row)
+            last_active = user_dict.get("lastActive")
+            status = "INACTIVE"
+            if last_active and last_active > datetime.now(timezone.utc) - timedelta(days=30):
+                status = "ACTIVE"
+            user_dict["status"] = status
+            users.append(user_dict)
+        return users
+
+
 
 
 @app.post("/analytics/feedback")
@@ -290,9 +311,9 @@ async def get_model_metrics(user=lead_above, pool=Depends(get_db_pool)):
     Returns:
         dict: A dictionary containing precision, recall, F1 score, and other metrics.
     """
-    from precognito.ingestion.influx_client import get_total_telemetry_count
-    from precognito.work_orders.database import SessionLocal
-    from precognito.work_orders.models import Audit
+    from .ingestion.influx_client import get_total_telemetry_count
+    from .work_orders.database import SessionLocal
+    from .work_orders.models import Audit
 
     async with pool.acquire() as conn:
         true_positives = await conn.fetchval(
@@ -376,7 +397,7 @@ async def get_assets(limit: int = 100, offset: int = 0, user=authenticated_user)
     Returns:
         list: A list of assets with their current status and last update time.
     """
-    from precognito.ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_api
+    from .ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_api
 
     # Note: unique() or group() in Flux can be used for true pagination if device count is huge
     # For now, we optimize by using a single query and limiting the processing
@@ -441,7 +462,7 @@ async def get_asset_telemetry(
     Returns:
         list: A list of telemetry data points.
     """
-    from precognito.ingestion.influx_client import (
+    from .ingestion.influx_client import (
         INFLUX_BUCKET,
         INFLUX_ORG,
         query_historical_data,
@@ -478,7 +499,7 @@ async def get_asset_predictions(
     Returns:
         list: A list of predictive results.
     """
-    from precognito.ingestion.influx_client import (
+    from .ingestion.influx_client import (
         INFLUX_BUCKET,
         INFLUX_ORG,
         query_historical_data,
@@ -516,7 +537,7 @@ async def get_anomalies(limit: int = 100, offset: int = 0, user=authenticated_us
     Returns:
         list: A list of detected anomalies.
     """
-    from precognito.ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_api
+    from .ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_api
 
     # Use limit and offset directly in Flux for better performance
     # Extended to 7 days to capture more historical anomaly data
@@ -534,7 +555,7 @@ async def get_anomalies(limit: int = 100, offset: int = 0, user=authenticated_us
                     "assetId": d_id,
                     "assetName": d_id.replace("_", " ").title(),
                     "severity": record.values.get("severity", "LOW"),
-                    "message": record.values.get("reason", "Anomaly detected"),
+                    "message": record.values.get("reason", "No reason provided"),
                     "timestamp": record.get_time().isoformat(),
                 }
             )
@@ -572,7 +593,7 @@ async def get_safety_alerts(
     Returns:
         list: A list of safety alerts.
     """
-    from precognito.ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_api
+    from .ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_api
 
     query = f'from(bucket: "{INFLUX_BUCKET}") |> range(start: {range}) |> filter(fn: (r) => r["_measurement"] == "safety_alerts") |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value") |> sort(columns: ["_time"], desc: true) |> limit(n: {limit}, offset: {offset})'
 
@@ -619,7 +640,7 @@ async def ingest_data_dev(request: Request, data: dict, user=admin_only):
     Raises:
         HTTPException: If device_id is missing or processing fails.
     """
-    from precognito.ingestion.core import process_ingestion
+    from .ingestion.core import process_ingestion
 
     device_id = data.get("device_id")
     if not device_id:
@@ -651,7 +672,7 @@ async def get_heartbeats(
     Returns:
         list: A list of device heartbeat statuses.
     """
-    from precognito.ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_api
+    from .ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_api
 
     query = f'from(bucket: "{INFLUX_BUCKET}") |> range(start: -30d) |> filter(fn: (r) => r["_measurement"] == "machine_telemetry") |> group(columns: ["device_id"]) |> last()'
     tables = query_api.query(query, org=INFLUX_ORG)
@@ -675,7 +696,7 @@ async def get_heartbeats(
             )
             diff = (now - ls).total_seconds()
 
-            status = "Active" if diff <= 15 else "Inactive"
+            status = "Active" if diff <= 65 else "Inactive"
 
             results.append(
                 {

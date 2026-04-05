@@ -5,13 +5,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime, timezone
-from precognito.work_orders.database import SessionLocal
-from precognito.inventory import models
-from precognito.ingestion.influx_client import query_latest_data
+from ..work_orders.database import SessionLocal
+from . import models
+from ..ingestion.influx_client import query_latest_data
 
-from precognito.auth import authenticated_user, store_manager_above
+from ..auth import authenticated_user, store_manager_above
 
-from precognito.inventory.schemas import PartReservationRequest, PurchaseOrderRequest
+from .schemas import PartReservationRequest, PurchaseOrderRequest
 
 router = APIRouter(
     prefix="/inventory", 
@@ -134,8 +134,8 @@ def get_jit_procurement_alerts(db: Session = Depends(get_db)):
     Returns:
         list: A list of JIT procurement alerts for all monitored assets.
     """
-    from precognito.ingestion.influx_client import get_all_devices
-    from precognito.work_orders.models import Asset
+    from ..ingestion.influx_client import get_all_devices
+    from ..work_orders.models import Asset
     
     # Asset type to part category mapping
     PART_MAPPING = {

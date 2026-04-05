@@ -10,7 +10,7 @@ from typing import Optional
 from .models import EngineRecommendationReport, SystemHealthResponse, AuditComplianceReport
 from .services import AdminReportingService
 
-from precognito.auth import manager_above
+from ..auth import manager_above
 
 router = APIRouter(
     prefix="/admin-reporting",

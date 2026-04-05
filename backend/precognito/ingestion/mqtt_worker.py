@@ -14,7 +14,7 @@ if backend_dir not in sys.path:
 
 import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
-from precognito.ingestion.core import process_ingestion
+from ..ingestion.core import process_ingestion
 
 load_dotenv()
 

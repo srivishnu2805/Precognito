@@ -9,6 +9,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-precognito_user}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   influxdb:
@@ -25,6 +30,11 @@ services:
     volumes:
       - influxdb_data:/var/lib/influxdb2
       - influxdb_config:/etc/influxdb2
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   mosquitto:
@@ -38,21 +48,49 @@ services:
       - mosquitto_log:/mosquitto/log
     restart: unless-stopped
 
-  ntfy:
-    image: binwiederhier/ntfy:latest
-    command: serve --host 0.0.0.0 --port 80
+  # Migration service - runs once on startup
+  migrate:
+    build:
+      context: .
+      target: backend
+    env_file:
+      - .env
     environment:
-      NTFY_BASE_URL: http://localhost:8079
-    ports:
-      - "8079:80"
+      DATABASE_URL: postgres://${POSTGRES_USER:-precognito_user}:${POSTGRES_PASSWORD:-precognito_password}@postgres:5432/${POSTGRES_DB:-precognito}
+      INFLUX_URL: http://influxdb:8086
+      INFLUX_TOKEN: ${INFLUX_TOKEN:-precognito_super_secret_token_123}
+      INFLUX_ORG: ${INFLUX_ORG:-precognito_org}
+      INFLUX_BUCKET: ${INFLUX_BUCKET:-precognito_bucket}
+    working_dir: /app/backend
+    command: ["sh", "-c", "uv run alembic upgrade head && python -c \"from precognito.work_orders.database import engine; from sqlalchemy import text; with engine.connect() as conn: conn.execute(text('''INSERT INTO roster (userId, name, email, role, skills, status, shift) VALUES ('admin@precognito.ai', 'Admin User', 'admin@precognito.ai', 'ADMIN', 'All', 'AVAILABLE', 'GENERAL'), ('manager@precognito.ai', 'Plant Manager', 'manager@precognito.ai', 'MANAGER', 'Planning,Supervision', 'AVAILABLE', 'GENERAL'), ('ot@precognito.ai', 'OT Specialist', 'ot@precognito.ai', 'OT_SPECIALIST', 'Automation,Controls', 'AVAILABLE', 'GENERAL'), ('tech@precognito.ai', 'Maintenance Tech', 'tech@precognito.ai', 'TECHNICIAN', 'Mechanical,Electrical', 'AVAILABLE', 'GENERAL'), ('store@precognito.ai', 'Store Manager', 'store@precognito.ai', 'STORE_MANAGER', 'Inventory', 'AVAILABLE', 'GENERAL') ON CONFLICT DO NOTHING''')); conn.commit()\""]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  # Seed service - seeds inventory data
+  seed-inventory:
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-precognito_password}
     volumes:
-      - ntfy_data:/var/cache/ntfy
-    restart: unless-stopped
+      - ./backend/seed_inventory.sql:/seed_inventory.sql:ro
+    command: ["sh", "-c", "sleep 2 && psql -h postgres -U ${POSTGRES_USER:-precognito_user} -d ${POSTGRES_DB:-precognito} -f /seed_inventory.sql || echo 'Inventory already seeded'"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_started
+    restart: "no"
 
   api:
     build:
       context: .
       target: backend
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-precognito_user}:${POSTGRES_PASSWORD:-precognito_password}@postgres:5432/${POSTGRES_DB:-precognito}
       INFLUX_URL: http://influxdb:8086
@@ -60,31 +98,95 @@ services:
       INFLUX_ORG: ${INFLUX_ORG:-precognito_org}
       INFLUX_BUCKET: ${INFLUX_BUCKET:-precognito_bucket}
       MQTT_BROKER: mosquitto
-      BETTER_AUTH_SECRET: fdr6WiAkIlESTZIjLMEAea2ni2PUZAUiTwVu046W5W8=
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-fdr6WiAkIlESTZIjLMEAea2ni2PUZAUiTwVu046W5W8=}
       BETTER_AUTH_URL: http://localhost:3000
       ENFORCE_HTTPS: "False"
     ports:
       - "8000:8000"
     depends_on:
-      - postgres
-      - influxdb
-      - mosquitto
+      postgres:
+        condition: service_healthy
+      influxdb:
+        condition: service_healthy
+      migrate:
+        condition: service_started
+      seed-inventory:
+        condition: service_started
     restart: always
 
   frontend:
     build:
       context: .
       target: frontend
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-precognito_user}:${POSTGRES_PASSWORD:-precognito_password}@postgres:5432/${POSTGRES_DB:-precognito}
       NEXT_PUBLIC_API_URL: http://api:8000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
-      BETTER_AUTH_SECRET: fdr6WiAkIlESTZIjLMEAea2ni2PUZAUiTwVu046W5W8=
+      PORT: "3000"
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-fdr6WiAkIlESTZIjLMEAea2ni2PUZAUiTwVu046W5W8=}
       BETTER_AUTH_URL: http://localhost:3000
     ports:
       - "3000:3000"
     depends_on:
       - api
+    restart: always
+
+  # Seed users service - seeds roster using psql
+  seed-users:
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-precognito_password}
+    command: [
+      "sh", "-c",
+      "psql -h postgres -U ${POSTGRES_USER:-precognito_user} -d ${POSTGRES_DB:-precognito} -c \"INSERT INTO roster (userId, name, email, role, skills, status, shift) VALUES ('admin@precognito.ai', 'Admin User', 'admin@precognito.ai', 'ADMIN', 'All', 'AVAILABLE', 'GENERAL'), ('manager@precognito.ai', 'Plant Manager', 'manager@precognito.ai', 'MANAGER', 'Planning,Supervision', 'AVAILABLE', 'GENERAL'), ('ot@precognito.ai', 'OT Specialist', 'ot@precognito.ai', 'OT_SPECIALIST', 'Automation,Controls', 'AVAILABLE', 'GENERAL'), ('tech@precognito.ai', 'Maintenance Tech', 'tech@precognito.ai', 'TECHNICIAN', 'Mechanical,Electrical', 'AVAILABLE', 'GENERAL'), ('store@precognito.ai', 'Store Manager', 'store@precognito.ai', 'STORE_MANAGER', 'Inventory', 'AVAILABLE', 'GENERAL') ON CONFLICT DO NOTHING\" || echo 'Roster already seeded'"
+    ]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_started
+    restart: "no"
+
+  # Simulator - generates synthetic sensor data for machine_1
+  simulator:
+    build:
+      context: .
+      target: backend
+    env_file:
+      - .env
+    environment:
+      MQTT_BROKER: mosquitto
+      MQTT_PORT: 1883
+    working_dir: /app/backend
+    command: ["sh", "-c", "sleep 5 && uv run python -m precognito.ingestion.simulator --mode mqtt --broker mosquitto --device machine_1 --interval 5"]
+    depends_on:
+      mosquitto:
+        condition: service_started
+      api:
+        condition: service_started
+    restart: always
+
+  # Simulator for test_machine
+  simulator-test:
+    build:
+      context: .
+      target: backend
+    env_file:
+      - .env
+    environment:
+      MQTT_BROKER: mosquitto
+      MQTT_PORT: 1883
+    working_dir: /app/backend
+    command: ["sh", "-c", "sleep 7 && uv run python -m precognito.ingestion.simulator --mode mqtt --broker mosquitto --device test_machine --interval 7"]
+    depends_on:
+      mosquitto:
+        condition: service_started
+      api:
+        condition: service_started
     restart: always
 
 volumes:

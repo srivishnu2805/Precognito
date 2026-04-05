@@ -4,12 +4,12 @@ API router for work orders, combining assets and audit sub-routers.
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from precognito.work_orders.assets import router as assets_router
-from precognito.work_orders.audit import router as audit_router
-from precognito.work_orders.database import SessionLocal
-from precognito.work_orders import models
+from .assets import router as assets_router
+from .audit import router as audit_router
+from .database import SessionLocal
+from . import models
 
-from precognito.auth import authenticated_user
+from ..auth import authenticated_user
 
 router = APIRouter(
     prefix="/work-orders", tags=["Work Orders"], dependencies=[authenticated_user]

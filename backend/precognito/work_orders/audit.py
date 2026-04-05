@@ -5,11 +5,11 @@ API router for managing audit logs and maintenance records.
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from precognito.work_orders.database import SessionLocal
-from precognito.work_orders.models import Audit
-from precognito.inventory.models import Inventory
-from precognito.auth import technician_above
-from precognito.work_orders.schemas import AuditCreateRequest, WorkOrderCompleteRequest
+from .database import SessionLocal
+from .models import Audit
+from ..inventory.models import Inventory
+from ..auth import technician_above
+from .schemas import AuditCreateRequest, WorkOrderCompleteRequest
 
 router = APIRouter(prefix="/audit", tags=["Audit"])
 

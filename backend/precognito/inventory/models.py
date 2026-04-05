@@ -2,7 +2,7 @@
 SQLAlchemy models for inventory management and part reservations.
 """
 from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey
-from precognito.work_orders.database import Base
+from ..work_orders.database import Base
 from datetime import datetime, timezone
 
 class Inventory(Base):

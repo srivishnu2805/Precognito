@@ -148,6 +148,13 @@ export const api = {
    * @returns {Promise<any>} List of audit logs.
    */
   getAuditLogs: () => fetchWithAuth("/audit-logs"),
+
+  /**
+   * Fetches all users.
+   *
+   * @returns {Promise<any>} List of users.
+   */
+  getUsers: () => fetchWithAuth("/users"),
   
   /**
    * Submits feedback for anomaly detection.

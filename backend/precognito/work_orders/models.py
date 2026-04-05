@@ -2,7 +2,7 @@
 SQLAlchemy models for assets, audits, and technician rosters.
 """
 from sqlalchemy import Column, Integer, String, DateTime, Text, Numeric
-from precognito.work_orders.database import Base
+from .database import Base
 from datetime import datetime, timezone
 
 class Asset(Base):
