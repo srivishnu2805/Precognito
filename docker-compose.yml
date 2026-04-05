@@ -65,6 +65,7 @@ services:
       context: .
       target: frontend
     environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-precognito_user}:${POSTGRES_PASSWORD:-precognito_password}@postgres:5432/${POSTGRES_DB:-precognito}
       NEXT_PUBLIC_API_URL: http://api:8000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       BETTER_AUTH_SECRET: fdr6WiAkIlESTZIjLMEAea2ni2PUZAUiTwVu046W5W8=

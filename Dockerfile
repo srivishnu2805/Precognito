@@ -43,7 +43,7 @@ RUN bun run build
 FROM oven/bun:latest AS frontend
 WORKDIR /app/frontend
 # Copy only necessary files from builder
-COPY --from=frontend-builder /app/frontend/package.json ./
+COPY --from=frontend-builder /app/frontend/package.json /app/frontend/bun.lock ./
 COPY --from=frontend-builder /app/frontend/.next ./.next
 COPY --from=frontend-builder /app/frontend/public ./public
 # Install production dependencies only
