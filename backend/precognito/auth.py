@@ -50,10 +50,13 @@ async def get_current_user(request: Request, pool: asyncpg.Pool = Depends(get_db
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     async with pool.acquire() as conn:
-        # Check both token and id columns as some versions of better-auth 
-        # use the ID in the cookie.
+        # Debug: list all tokens in the DB
+        all_sessions = await conn.fetch('SELECT id, token FROM session LIMIT 5')
+        logger.info(f"Existing tokens in DB: {[s['token'][:8] for s in all_sessions]}")
+        logger.info(f"Looking for token: {session_token[:8]}...")
+
         session = await conn.fetchrow(
-            'SELECT "userId", "expiresAt", "token" FROM "session" WHERE "token" = $1 OR "id" = $1',
+            'SELECT userId, expiresAt, token FROM "session" WHERE token = $1 OR id = $1',
             session_token
         )
         
