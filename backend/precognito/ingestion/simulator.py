@@ -128,7 +128,7 @@ if __name__ == "__main__":
     parser.add_argument("--broker", default="localhost", help="MQTT Broker address")
     parser.add_argument("--port", type=int, default=1883, help="MQTT Port")
     parser.add_argument("--device", default="machine_1", help="Device ID")
-    parser.add_argument("--interval", type=float, default=2.0, help="Interval between readings")
+    parser.add_argument("--interval", type=float, default=5.0, help="Interval between readings")
     parser.add_argument("--token", help="Bearer token for HTTP auth")
     
     args = parser.parse_args()

@@ -9,6 +9,7 @@ Date: April 2026
 
 import json
 import logging
+import pickle
 import numpy as np
 import pandas as pd
 from typing import Dict, List, Tuple
@@ -162,14 +163,23 @@ class AnomalyDetector:
     def _load_model(self):
         """Loads trained Isolation Forest model, scaler, and metadata from disk."""
         try:
-            import pickle
             base_path = Path(__file__).parent
             model_path = base_path / "anomaly_model.pkl"
             scaler_path = base_path / "scaler.pkl"
+            encoder_path = base_path / "label_encoder.pkl"
             
             if model_path.exists() and scaler_path.exists():
-                self.model = pickle.load(open(model_path, 'rb'))
-                self.scaler = pickle.load(open(scaler_path, 'rb'))
+                with open(model_path, 'rb') as f:
+                    self.model = pickle.load(f)
+                with open(scaler_path, 'rb') as f:
+                    self.scaler = pickle.load(f)
+                
+                # Load encoder if available
+                if encoder_path.exists():
+                    with open(encoder_path, 'rb') as f:
+                        self.label_encoder = pickle.load(f)
+                else:
+                    self.label_encoder = None
                 
                 # Load feature names
                 feature_names_path = base_path / "feature_names.json"
@@ -252,9 +262,6 @@ class AnomalyDetector:
                 # Fallback to threshold-based detection
                 return self._threshold_detection(data)
             
-            # Prepare data for ML model
-            import pandas as pd
-            
             # Map input data to training data format
             # Note: API input maps to training dataset features
             features = {
@@ -269,15 +276,11 @@ class AnomalyDetector:
             # Create DataFrame and encode categorical
             df_features = pd.DataFrame([features])
             
-            # Load label encoder if available
-            try:
-                import pickle
-                base_path = Path(__file__).parent
-                with open(base_path / 'label_encoder.pkl', 'rb') as f:
-                    label_encoder = pickle.load(f)
-                df_features['Type_encoded'] = label_encoder.transform(df_features['Type'])
+            # Use cached label encoder
+            if hasattr(self, 'label_encoder') and self.label_encoder is not None:
+                df_features['Type_encoded'] = self.label_encoder.transform(df_features['Type'])
                 df_features = df_features.drop('Type', axis=1)
-            except Exception:
+            else:
                 # Fallback: simple encoding
                 type_mapping = {'L': 0, 'M': 1, 'H': 2}
                 df_features['Type_encoded'] = df_features['Type'].map(type_mapping).fillna(1)
