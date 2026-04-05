@@ -61,8 +61,10 @@ async def get_current_user(request: Request, pool: asyncpg.Pool = Depends(get_db
         if not session:
             # Last ditch: check if token matches any token in the DB via partial match for debugging
             all_t = await conn.fetch("SELECT token FROM session LIMIT 5")
-            logger.warning(f"Received token: '{session_token}' (len {len(session_token)})")
-            logger.warning(f"Tokens in DB: {[f\"'{t['token']}' (len {len(t['token'])})\" for t in all_t]}")
+            received_info = f"'{session_token}' (len {len(session_token)})"
+            db_tokens = [f"'{t['token']}' (len {len(t['token'])})" for t in all_t]
+            logger.warning(f"Received token: {received_info}")
+            logger.warning(f"Tokens in DB: {db_tokens}")
             raise HTTPException(status_code=401, detail="Invalid session")
             
         # Robust expiry check
