@@ -352,6 +352,61 @@ async def get_assets(limit: int = 100, offset: int = 0, user = authenticated_use
             })
     return all_assets[offset : offset + limit]
 
+@app.get("/assets/{asset_id}/telemetry")
+async def get_asset_telemetry(asset_id: str, range: str = "-1h", user = authenticated_user):
+    """Retrieves historical telemetry for a specific asset.
+
+    Args:
+        asset_id: The ID of the asset.
+        range: Time range for the data. Defaults to "-1h".
+        user: The authenticated user.
+
+    Returns:
+        list: A list of telemetry data points.
+    """
+    from precognito.ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_historical_data
+    
+    tables = query_historical_data(asset_id, "machine_telemetry", range)
+    results = []
+    for table in tables:
+        for record in table.records:
+            results.append({
+                "_time": record.get_time().isoformat(),
+                "temperature": record.values.get("temperature"),
+                "vibration": record.values.get("vibration"),
+                "pressure": record.values.get("pressure"),
+                "torque": record.values.get("torque"),
+                "vibration_rms": record.values.get("vibration_rms")
+            })
+    return results
+
+@app.get("/assets/{asset_id}/predictions")
+async def get_asset_predictions(asset_id: str, range: str = "-24h", user = authenticated_user):
+    """Retrieves historical RUL predictions for a specific asset.
+
+    Args:
+        asset_id: The ID of the asset.
+        range: Time range for the predictions. Defaults to "-24h".
+        user: The authenticated user.
+
+    Returns:
+        list: A list of predictive results.
+    """
+    from precognito.ingestion.influx_client import INFLUX_BUCKET, INFLUX_ORG, query_historical_data
+    
+    tables = query_historical_data(asset_id, "predictive_results", range)
+    results = []
+    for table in tables:
+        for record in table.records:
+            results.append({
+                "_time": record.get_time().isoformat(),
+                "predicted_rul_hours": record.values.get("predicted_rul_hours"),
+                "predicted_fault_type": record.values.get("predicted_fault_type"),
+                "confidence_score_percent": record.values.get("confidence_score_percent"),
+                "risk_level": record.values.get("risk_level")
+            })
+    return results
+
 @app.get("/anomalies")
 async def get_anomalies(limit: int = 100, offset: int = 0, user = authenticated_user):
     """Retrieves detected anomalies from InfluxDB.

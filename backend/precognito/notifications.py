@@ -44,7 +44,7 @@ def send_external_notification(title: str, message: str, priority: str = "defaul
             # If not, we'll just use the message body for the whole thing 
             # or strip emojis for the header specifically.
             import re
-            clean_title = title.encode('ascii', 'ignore').decode('ascii')
+            clean_title = title.encode('ascii', 'ignore').decode('ascii').strip()
             headers["Title"] = clean_title
     
     if tags:
