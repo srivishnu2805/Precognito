@@ -39,6 +39,27 @@ CREATE TABLE IF NOT EXISTS audits (
     "completedAt" TIMESTAMP WITH TIME ZONE
 );
 
+CREATE TABLE IF NOT EXISTS inventory (
+    id SERIAL PRIMARY KEY,
+    "partName" TEXT NOT NULL,
+    "partNumber" TEXT UNIQUE NOT NULL,
+    quantity INTEGER DEFAULT 0,
+    "minThreshold" INTEGER DEFAULT 5,
+    "leadTimeDays" INTEGER DEFAULT 7,
+    "costPerUnit" NUMERIC(10, 2) DEFAULT 0.00,
+    category TEXT,
+    "lastRestocked" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS part_reservations (
+    id SERIAL PRIMARY KEY,
+    "partId" INTEGER REFERENCES inventory(id) ON DELETE CASCADE,
+    "workOrderId" INTEGER,
+    quantity INTEGER NOT NULL,
+    status TEXT DEFAULT 'RESERVED',
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS roster (
     id SERIAL PRIMARY KEY,
     "userId" TEXT,
