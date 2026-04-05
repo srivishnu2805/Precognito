@@ -33,7 +33,8 @@ async def get_current_user(request: Request, pool: asyncpg.Pool = Depends(get_db
     Returns:
         asyncpg.Record: The authenticated user record.
     """
-    session_token = request.cookies.get("better-auth.session_token")
+    session_token = request.cookies.get("better-auth.session_token") or \
+                    request.cookies.get("__better-auth-session-token")
     if not session_token:
         # Check Authorization header too
         auth_header = request.headers.get("Authorization")
