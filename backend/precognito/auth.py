@@ -46,25 +46,17 @@ async def get_current_user(request: Request, pool: asyncpg.Pool = Depends(get_db
             session_token = auth_header.split(" ")[1]
             
     if not session_token:
-        logger.warning("No session token found in cookies or headers")
         raise HTTPException(status_code=401, detail="Not authenticated")
 
+    # Better Auth tokens are often composite (token.signature)
+    # We only need the first part for the database lookup
+    lookup_token = session_token.split(".")[0]
+
     async with pool.acquire() as conn:
-        # Debug: Confirm DB name
-        db_name = await conn.fetchval("SELECT current_database()")
-        logger.info(f"Connected to DB: {db_name}")
-        
-        # Greedy query to handle potential CHAR padding or case mismatches
-        query = 'SELECT "userId", "expiresAt", token FROM session WHERE TRIM(token) = $1 OR token ILIKE $1 OR TRIM(id) = $1'
-        session = await conn.fetchrow(query, session_token.strip())
+        query = 'SELECT "userId", "expiresAt", token FROM session WHERE token = $1 OR id = $1'
+        session = await conn.fetchrow(query, lookup_token)
         
         if not session:
-            # Last ditch: check if token matches any token in the DB via partial match for debugging
-            all_t = await conn.fetch("SELECT token FROM session LIMIT 5")
-            received_info = f"'{session_token}' (len {len(session_token)})"
-            db_tokens = [f"'{t['token']}' (len {len(t['token'])})" for t in all_t]
-            logger.warning(f"Received token: {received_info}")
-            logger.warning(f"Tokens in DB: {db_tokens}")
             raise HTTPException(status_code=401, detail="Invalid session")
             
         # Robust expiry check
