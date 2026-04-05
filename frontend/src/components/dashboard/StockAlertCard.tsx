@@ -5,8 +5,9 @@
 "use client";
 
 import Link from "next/link";
-import { SparePart } from "@/lib/types";
-import { mockAssets } from "@/lib/mockData";
+import { SparePart, Asset } from "@/lib/types";
+import { api } from "@/lib/api";
+import { useState, useEffect } from "react";
 
 interface StockAlertCardProps {
   part: SparePart;
@@ -20,7 +21,23 @@ interface StockAlertCardProps {
  * @returns {JSX.Element} The rendered stock alert card.
  */
 export function StockAlertCard({ part }: StockAlertCardProps) {
-  const asset = part.assetId ? mockAssets.find((a) => a.id === part.assetId) : null;
+  const [asset, setAsset] = useState<Asset | null>(null);
+
+  useEffect(() => {
+    async function fetchAsset() {
+      if (part.assetId) {
+        try {
+          const assets = await api.getAssets();
+          const found = assets.find((a) => a.id === part.assetId);
+          setAsset(found || null);
+        } catch {
+          setAsset(null);
+        }
+      }
+    }
+    fetchAsset();
+  }, [part.assetId]);
+
   const thresholdHours = part.leadTimeDays * 24 * 1.1;
 
   return (

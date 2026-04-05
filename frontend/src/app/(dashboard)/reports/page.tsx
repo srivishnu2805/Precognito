@@ -76,13 +76,19 @@ export default function ReportsPage() {
     try {
       // Fetch relevant data based on category
       if (report.category === "COMPLIANCE") {
-        data = await api.getAuditLogs();
+        // Use admin-reporting endpoint for compliance
+        data = await api.getAuditCompliance();
       } else if (report.category === "HEALTH") {
         data = await api.getAssets();
       } else if (report.category === "ROI") {
         const metrics = await api.getModelMetrics();
         const oee = await api.getOEEMetrics();
         data = [{ ...metrics, ...oee }];
+      }
+
+      if (data.length === 0) {
+        alert("No data available for this report. Please try a different category or date range.");
+        return;
       }
 
       const fileName = `${report.name.toLowerCase().replace(/\s+/g, '-')}-${new Date().getTime()}`;

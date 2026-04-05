@@ -45,7 +45,7 @@ function formatTimeAgo(timestamp: string): string {
  * @returns {JSX.Element} The rendered alert item.
  */
 export function AlertItem({ alert }: AlertItemProps) {
-  const config = severityConfig[alert.severity];
+  const config = severityConfig[alert.severity] || severityConfig.LOW;
 
   return (
     <div className="border border-[#334155] rounded-lg bg-[#1e293b] p-4 hover:bg-[#334155] transition-colors">

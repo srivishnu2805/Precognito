@@ -38,6 +38,17 @@ services:
       - mosquitto_log:/mosquitto/log
     restart: unless-stopped
 
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    command: serve --host 0.0.0.0 --port 80
+    environment:
+      NTFY_BASE_URL: http://localhost:8079
+    ports:
+      - "8079:80"
+    volumes:
+      - ntfy_data:/var/cache/ntfy
+    restart: unless-stopped
+
   api:
     build:
       context: .

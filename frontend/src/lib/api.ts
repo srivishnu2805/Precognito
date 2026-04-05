@@ -225,8 +225,11 @@ export const api = {
    *
    * @returns {Promise<any>} System health data.
    */
-  getSystemHealth: () => fetchWithAuth("/admin-reporting/health"),
-  /**
+   getSystemHealth: () => fetchWithAuth("/admin-reporting/health"),
+   
+   getAuditCompliance: () => fetchWithAuth("/admin-reporting/audit"),
+   
+   /**
    * Fetches device heartbeats.
    *
    * @returns {Promise<any>} List of device heartbeats.

@@ -7,7 +7,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { mockTemperatureTrends, mockAssets } from "@/lib/mockData";
+import { mockTemperatureTrends } from "@/lib/mockData";
 import { ThermalAlertCard } from "@/components/dashboard/ThermalAlertCard";
 import { ThermalTrendChart } from "@/components/dashboard/ThermalTrendChart";
 import { ThermalAlert, Asset } from "@/lib/types";

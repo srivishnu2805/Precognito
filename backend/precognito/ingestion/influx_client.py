@@ -1,6 +1,7 @@
 """
 InfluxDB client module for saving and querying sensor telemetry and analysis results.
 """
+
 import os
 import logging
 from datetime import datetime, timezone
@@ -25,15 +26,16 @@ client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
 
 # Configure asynchronous batch writes for industrial performance
 write_options = WriteOptions(
-    batch_size=100,           # Number of points to write in a single batch
-    flush_interval=1000,      # Maximum time to wait before flushing (ms)
-    retry_interval=5000,      # Time to wait before retrying (ms)
-    max_retries=3,            # Maximum number of retries
-    max_retry_delay=30000     # Maximum delay between retries (ms)
+    batch_size=100,  # Number of points to write in a single batch
+    flush_interval=1000,  # Maximum time to wait before flushing (ms)
+    retry_interval=5000,  # Time to wait before retrying (ms)
+    max_retries=3,  # Maximum number of retries
+    max_retry_delay=30000,  # Maximum delay between retries (ms)
 )
 
 write_api = client.write_api(write_options=write_options)
 query_api = client.query_api()
+
 
 @influx_write_breaker
 def save_sensor_data(device_id: str, data: dict):
@@ -43,9 +45,11 @@ def save_sensor_data(device_id: str, data: dict):
         device_id: The ID of the device sending the data.
         data: A dictionary containing sensor readings.
     """
-    point = Point("machine_telemetry") \
-        .tag("device_id", device_id) \
+    point = (
+        Point("machine_telemetry")
+        .tag("device_id", device_id)
         .time(datetime.now(timezone.utc), WritePrecision.NS)
+    )
 
     for key, value in data.items():
         if isinstance(value, (int, float)):
@@ -55,6 +59,7 @@ def save_sensor_data(device_id: str, data: dict):
 
     write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
 
+
 @influx_write_breaker
 def save_anomaly_result(device_id: str, result: dict):
     """Saves anomaly detection results to InfluxDB.
@@ -63,15 +68,17 @@ def save_anomaly_result(device_id: str, result: dict):
         device_id: The ID of the device.
         result: A dictionary containing anomaly results (severity, confidence, etc.).
     """
-    point = Point("anomaly_results") \
-        .tag("device_id", device_id) \
-        .tag("severity", result.get("severity", "LOW")) \
-        .field("anomaly_detected", bool(result.get("anomaly_detected", False))) \
-        .field("confidence", float(result.get("confidence", 0.0))) \
-        .field("reason", str(result.get("reason", ""))) \
+    point = (
+        Point("anomaly_results")
+        .tag("device_id", device_id)
+        .tag("severity", result.get("severity", "LOW"))
+        .field("anomaly_detected", bool(result.get("anomaly_detected", False)))
+        .field("confidence", float(result.get("confidence", 0.0)))
         .time(datetime.now(timezone.utc), WritePrecision.NS)
+    )
 
     write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
+
 
 @influx_write_breaker
 def save_predictive_result(device_id: str, result: dict):
@@ -81,15 +88,21 @@ def save_predictive_result(device_id: str, result: dict):
         device_id: The ID of the device.
         result: A dictionary containing predictive results (risk_level, rul_hours, etc.).
     """
-    point = Point("predictive_results") \
-        .tag("device_id", device_id) \
-        .tag("risk_level", result.get("risk_level", "Normal")) \
-        .tag("predicted_fault_type", result.get("predicted_fault_type", "None")) \
-        .field("predicted_rul_hours", float(result.get("predicted_rul_hours", 0.0))) \
-        .field("confidence_score_percent", float(result.get("confidence_score_percent", 0.0))) \
+    point = (
+        Point("predictive_results")
+        .tag("device_id", device_id)
+        .tag("risk_level", result.get("risk_level", "Normal"))
+        .tag("predicted_fault_type", result.get("predicted_fault_type", "None"))
+        .field("predicted_rul_hours", float(result.get("predicted_rul_hours", 0.0)))
+        .field(
+            "confidence_score_percent",
+            float(result.get("confidence_score_percent", 0.0)),
+        )
         .time(datetime.now(timezone.utc), WritePrecision.NS)
+    )
 
     write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
+
 
 @influx_read_breaker
 def query_latest_data(device_id: str, measurement: str = "machine_telemetry"):
@@ -105,6 +118,7 @@ def query_latest_data(device_id: str, measurement: str = "machine_telemetry"):
     query = f'from(bucket: "{INFLUX_BUCKET}") |> range(start: -1h) |> filter(fn: (r) => r["_measurement"] == "{measurement}") |> filter(fn: (r) => r["device_id"] == "{device_id}") |> last()'
     return query_api.query(query, org=INFLUX_ORG)
 
+
 @influx_read_breaker
 def query_historical_data(device_id: str, measurement: str, range_start: str = "-24h"):
     """Queries historical data for a device over a specific time range.
@@ -119,6 +133,7 @@ def query_historical_data(device_id: str, measurement: str, range_start: str = "
     """
     query = f'from(bucket: "{INFLUX_BUCKET}") |> range(start: {range_start}) |> filter(fn: (r) => r["_measurement"] == "{measurement}") |> filter(fn: (r) => r["device_id"] == "{device_id}") |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")'
     return query_api.query(query, org=INFLUX_ORG)
+
 
 @influx_read_breaker
 def get_all_devices(measurement: str = "machine_telemetry"):
@@ -138,6 +153,7 @@ def get_all_devices(measurement: str = "machine_telemetry"):
             devices.append(record.values.get("device_id"))
     return list(set(devices))
 
+
 @influx_read_breaker
 def get_total_telemetry_count(range_start: str = "-30d"):
     """Returns the total number of telemetry points received in the given range.
@@ -150,15 +166,18 @@ def get_total_telemetry_count(range_start: str = "-30d"):
     """
     query = f'from(bucket: "{INFLUX_BUCKET}") |> range(start: {range_start}) |> filter(fn: (r) => r["_measurement"] == "machine_telemetry") |> count()'
     tables = query_api.query(query, org=INFLUX_ORG)
-    
+
     total = 0
     for table in tables:
         for record in table.records:
             total += record.get_value()
     return total
 
+
 @influx_read_breaker
-def check_sustained_thermal(device_id: str, threshold: float = 70.0, window: str = "5m"):
+def check_sustained_thermal(
+    device_id: str, threshold: float = 70.0, window: str = "5m"
+):
     """Checks if temperature has been sustained above a threshold.
 
     Args:
@@ -171,13 +190,13 @@ def check_sustained_thermal(device_id: str, threshold: float = 70.0, window: str
     """
     query = f'from(bucket: "{INFLUX_BUCKET}") |> range(start: -{window}) |> filter(fn: (r) => r["_measurement"] == "machine_telemetry") |> filter(fn: (r) => r["device_id"] == "{device_id}") |> filter(fn: (r) => r["_field"] == "temperature")'
     tables = query_api.query(query, org=INFLUX_ORG)
-    
+
     values = []
     for table in tables:
         for record in table.records:
             values.append(record.get_value())
-            
+
     if not values:
         return False
-        
+
     return all(v > threshold for v in values)

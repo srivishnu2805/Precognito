@@ -1,6 +1,7 @@
 """
 API router for work orders, combining assets and audit sub-routers.
 """
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from precognito.work_orders.assets import router as assets_router
@@ -11,14 +12,13 @@ from precognito.work_orders import models
 from precognito.auth import authenticated_user
 
 router = APIRouter(
-    prefix="/work-orders", 
-    tags=["Work Orders"],
-    dependencies=[authenticated_user]
+    prefix="/work-orders", tags=["Work Orders"], dependencies=[authenticated_user]
 )
 
 # Include assets and audit sub-routers
 router.include_router(assets_router)
 router.include_router(audit_router)
+
 
 def get_db():
     """Dependency to get a SQLAlchemy database session.
@@ -31,6 +31,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 @router.get("/")
 def get_work_orders(limit: int = 100, offset: int = 0, db: Session = Depends(get_db)):
@@ -45,19 +46,17 @@ def get_work_orders(limit: int = 100, offset: int = 0, db: Session = Depends(get
         list: A list of dictionaries, each representing a work order.
     """
     # Join Audit with Asset to get name and MTTR
-    results = db.query(
-        models.Audit, 
-        models.Asset.assetName, 
-        models.Asset.mttr, 
-        models.Asset.manual
-    ).outerjoin(
-        models.Asset, 
-        models.Audit.assetId == models.Asset.assetId
-    ).order_by(models.Audit.timestamp.desc())\
-     .limit(limit)\
-     .offset(offset)\
-     .all()
-    
+    results = (
+        db.query(
+            models.Audit, models.Asset.assetName, models.Asset.mttr, models.Asset.manual
+        )
+        .outerjoin(models.Asset, models.Audit.assetId == models.Asset.assetId)
+        .order_by(models.Audit.timestamp.desc())
+        .limit(limit)
+        .offset(offset)
+        .all()
+    )
+
     # Format into flat dictionary
     output = []
     for audit, name, mttr, manual in results:
@@ -66,5 +65,5 @@ def get_work_orders(limit: int = 100, offset: int = 0, db: Session = Depends(get
         d["mttr"] = mttr or "Unknown"
         d["manual"] = manual
         output.append(d)
-        
+
     return output

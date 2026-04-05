@@ -37,18 +37,22 @@ export default function WorkOrdersPage() {
   const [selectedPart, setSelectedPart] = useState("");
   const [partQty, setPartQty] = useState(1);
   const [laborHours, setLaborHours] = useState(1);
+  const [verifiedAssetId, setVerifiedAssetId] = useState<string | null>(null);
 
   const loadData = async () => {
     try {
+      console.log("Loading work orders from /work-orders/...");
       const [woData, invData] = await Promise.all([
         api.getWorkOrders(),
         api.getInventory()
       ]);
+      console.log("Work orders loaded:", woData);
 
       setWorkOrders(woData || []);
       setInventory(invData || []);
     } catch (err) {
       console.error("Failed to load work order data", err);
+      console.error("Error details:", err instanceof Error ? err.message : err);
     } finally {
       setLoading(false);
     }
@@ -86,6 +90,11 @@ export default function WorkOrdersPage() {
   const handleCompleteTask = async () => {
     if (!completingTask) return;
     
+    if (!verifiedAssetId || verifiedAssetId !== completingTask.assetId) {
+      alert("Please scan the QR code to verify the asset before completing the work order.");
+      return;
+    }
+    
     try {
       await api.completeWorkOrder(completingTask.id, {
         resolution,
@@ -97,6 +106,7 @@ export default function WorkOrdersPage() {
       setCompletingTask(null);
       setResolution("");
       setSelectedPart("");
+      setVerifiedAssetId(null);
       loadData();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "An unknown error occurred";
@@ -276,6 +286,48 @@ export default function WorkOrdersPage() {
               <p className="text-xs text-[#94a3b8]">{completingTask.assetName} ({completingTask.assetId})</p>
             </div>
             <div className="p-4 space-y-4">
+              {/* QR Code Verification */}
+              <div className="p-4 bg-[#0f172a] rounded-lg border border-[#334155]">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-xs text-[#94a3b8]">Asset QR Verification</label>
+                  {verifiedAssetId === completingTask.assetId && (
+                    <span className="text-xs text-[#22c55e] bg-[#22c55e]/20 px-2 py-0.5 rounded">Verified</span>
+                  )}
+                </div>
+                
+                {verifiedAssetId === completingTask.assetId ? (
+                  <div className="text-center py-2">
+                    <div className="w-12 h-12 mx-auto mb-2 bg-[#22c55e]/20 rounded-full flex items-center justify-center">
+                      <svg className="w-6 h-6 text-[#22c55e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <p className="text-sm text-[#22c55e]">{completingTask.assetId}</p>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setShowScanner(true)}
+                      className="w-full py-2 bg-[#3b82f6] text-white text-sm rounded-lg hover:bg-[#2563eb] transition-colors"
+                    >
+                      Scan QR Code
+                    </button>
+                    {showScanner && (
+                      <div className="mt-2">
+                        <QRScanner 
+                          onScan={(id) => {
+                            setVerifiedAssetId(id);
+                            setShowScanner(false);
+                          }} 
+                          onClose={() => setShowScanner(false)}
+                          expectedAssetId={completingTask?.assetId}
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
               <div>
                 <label className="block text-xs text-[#94a3b8] mb-1">Resolution Notes</label>
                 <textarea
@@ -323,7 +375,10 @@ export default function WorkOrdersPage() {
             </div>
             <div className="p-4 border-t border-[#334155] flex justify-end gap-2">
               <button
-                onClick={() => setCompletingTask(null)}
+                onClick={() => {
+                  setCompletingTask(null);
+                  setVerifiedAssetId(null);
+                }}
                 className="px-4 py-2 text-sm text-[#94a3b8] hover:text-[#f1f5f9]"
               >
                 Cancel

@@ -67,8 +67,17 @@ export function downloadPDF(data: Record<string, unknown>[], title: string, file
   doc.text(`Report ID: PR-${Math.random().toString(36).substring(2, 9).toUpperCase()}`, 14, 67);
 
   // --- Data Table ---
+  // Sanitize data to handle nested objects and special values
+  const sanitizeValue = (val: unknown): string => {
+    if (val === null || val === undefined) return "";
+    if (typeof val === "object") return JSON.stringify(val);
+    return String(val);
+  };
+  
   const headers = Object.keys(data[0]);
-  const body = data.map((obj) => Object.values(obj).map((val) => String(val)));
+  const body = data.map((obj) => 
+    Object.values(obj).map((val) => sanitizeValue(val))
+  );
 
   autoTable(doc, {
     startY: 75,
